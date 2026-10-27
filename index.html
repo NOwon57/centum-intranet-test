@@ -4656,6 +4656,47 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .ctbl tr.ct-go{cursor:pointer}
 .ctbl tr.ct-go:hover>td{background:rgba(226,196,143,.12)}
 .ctbl tr.ct-go:focus-visible{outline:2px solid var(--apricot-deep);outline-offset:-2px}
+/* v193 요청했던 내용: 접으면 제목만, 펼치면 전체 */
+.s4-bd__info .s4-bd__past summary{display:flex;align-items:center;gap:8px;list-style:none;padding:8px 10px;border:1px solid var(--line);background:#faf7f4;user-select:none}
+.s4-bd__info .s4-bd__past summary::-webkit-details-marker{display:none}
+.s4-bd__info .s4-bd__past summary::before{content:'';width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex:none;margin-right:2px}
+.s4-bd__info .s4-bd__past[open] summary::before{transform:rotate(45deg)}
+.s4-bd__info .s4-bd__past .s4-past__tg{margin-left:auto;font-size:12px;font-weight:400;color:var(--muted)}
+.s4-bd__info .s4-bd__past .s4-past__tg::after{content:'펼치기'}
+.s4-bd__info .s4-bd__past[open] .s4-past__tg::after{content:'접기'}
+.s4-bd__info .s4-bd__past summary:hover{border-color:var(--apricot)}
+.s4-bd__info .s4-bd__past summary:focus-visible{outline:2px solid var(--apricot-deep);outline-offset:1px}
+.s4-bd__info .s4-bd__past[open] summary{margin-bottom:8px}
+.s4-bd__info .s4-bd__past .s4-quote{overflow-wrap:anywhere}
+/* v194 2단계: 비교 표 등은 체크리스트·파일 박스 아래, 메모장 바로 위 · 폭 60% */
+.s4-special--low{margin:16px 0;width:60%;max-width:100%}
+@media (max-width:1100px){.s4-special--low{width:100%}}
+/* v195 캘린더: 날짜 칸은 개수만 · 달력 20% 작게 */
+.cal__cnt{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.5;padding:1px 6px;background:var(--kb);color:var(--ink);min-width:0;white-space:nowrap}
+.cal__cnt i{width:7px;height:7px;border-radius:50%;background:var(--k);flex:none}
+.cal__cnt b{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.cal__cnt--c{--k:var(--apricot-deep);--kb:var(--apricot-soft)}
+.cal__cnt--w{--k:#3d4a9a;--kb:#eef0fb}
+.cal__cnt--e{--k:var(--muted);--kb:#f4efea}
+.cal__cell.is-out .cal__cnt{opacity:.55}
+.cal__cell{min-height:84px}
+@media (min-width:641px){.cal__cell{min-height:128px;padding:8px;gap:6px}.cal__d{font-size:15px;width:30px;height:30px}.cal__cnt{font-size:13px;padding:2px 8px}.cal__evs{gap:4px}}
+@media (min-width:981px){.cal{grid-template-columns:calc((100% - 404px)*.8) minmax(0,1fr)}}
+@media (max-width:640px){.cal__evs{flex-direction:column;align-items:stretch;gap:2px;width:100%}.cal__cnt{padding:0 3px;gap:3px;font-size:11px;justify-content:center}.cal__cnt-l{display:none}.cal__cnt b{margin-left:0}.cal__cell{min-height:64px}}
+/* v196 캘린더: 보정 강조 */
+.cal__cnt--f{--k:var(--danger);--kb:var(--danger-soft);color:var(--danger);font-weight:700}
+.cal__cnt--f b{color:var(--danger)}
+.cal__cell.is-fx{background:#fff6f4;box-shadow:inset 0 0 0 2px var(--danger)}
+.cal__cell.is-fx:hover{background:#ffeeea}
+.cal__cell.is-fx.is-sel{box-shadow:inset 0 0 0 2px var(--danger),inset 0 0 0 4px var(--apricot-deep)}
+.cal__cell.is-fx.is-out{background:#fbf3f1}
+/* v197 보정 완료 단추 */
+.fx__rh .fx__sp{flex:1 1 auto}
+.fx__done{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:700}
+.fx__done:hover{filter:brightness(1.08)}
+.fx__undo{font-size:12px}
+.fx__r.is-done{border-color:#bfe0cb;box-shadow:inset 4px 0 0 var(--ok)}
+.fx__r.is-done .fx__st{font-size:12.5px}
 </style>
 <script>
 (function(){try{if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim')}catch(e){}})();
@@ -11097,7 +11138,11 @@ function fxRound(c,r,i,ok,ctx){var no=(i+1)+'차 보정',done=fxIsD(r.date),dd=f
   var el=h('div',{class:'fx__r'+(done?' is-done':lv?' is-'+lv:''),'data-rnd':r.id||'legacy'});
   var del=null;if(ok&&r.id){del=h('button',{class:'btn btn--sm btn--del',type:'button','data-fxdel':r.id,text:'지우기',onclick:function(){if(!del.dataset.arm){del.dataset.arm='1';del.textContent='한 번 더 누르면 지웁니다';setTimeout(function(){if(del.isConnected){delete del.dataset.arm;del.textContent='지우기'}},5000);return}
     del.disabled=true;fxSave(c,r,{del:true,delAt:Date.now(),delBy:ME||null})}})}
-  el.appendChild(h('div',{class:'fx__rh'},h('b',{text:no}),h('span',{class:'fx__st',text:st}),r.at&&r.by&&S.staff[r.by]?h('span',{class:'sub',text:'등록 '+fmtDate(r.at)+' · '+nameOf(r.by)}):null,del));
+  /* v197: 보정 완료 단추(처리일 = 오늘 자동) · 완료 취소 */
+  var dn=null;if(ok){dn=done?h('button',{class:'btn btn--sm btn--line fx__undo',type:'button','data-fxundo':r.id||'legacy',text:'완료 취소',title:'처리일을 지우고 다시 처리할 보정으로',onclick:function(e){e.currentTarget.disabled=true;fxSave(c,r,{date:'',doneAt:null,doneBy:null})}})
+    :h('button',{class:'btn btn--sm fx__done',type:'button','data-fxdone':r.id||'legacy',text:'✓ 보정 완료',title:'누르면 처리일에 오늘 날짜가 들어가고 완료로 표시됩니다',onclick:function(e){e.currentTarget.disabled=true;fxSave(c,r,{date:today(),doneAt:Date.now(),doneBy:ME||null})}})}
+  var dby=done&&r.doneBy&&S.staff[r.doneBy]?nameOf(r.doneBy):'';
+  el.appendChild(h('div',{class:'fx__rh'},h('b',{text:no}),h('span',{class:'fx__st',text:done?'✓ 보정 완료 · 처리일 '+r.date.replace(/-/g,'.')+(dby?' · '+dby:''):st}),r.at&&r.by&&S.staff[r.by]?h('span',{class:'sub',text:'등록 '+fmtDate(r.at)+' · '+nameOf(r.by)}):null,h('span',{class:'fx__sp'}),dn,del));
   var fx=h('input',{class:'inp fx__fix',type:'date','data-f':'fix','aria-label':no+' 보정기한'}),dt=h('input',{class:'inp',type:'date','data-f':'rdate','aria-label':no+' 처리일'});fx.value=r.fix||'';dt.value=r.date||'';
   if(!ok){fx.disabled=true;dt.disabled=true}
   fx.addEventListener('change',function(){if((fx.value||'')!==(r.fix||''))fxSave(c,r,{fix:fx.value||''})});
@@ -11115,7 +11160,7 @@ function fxRound(c,r,i,ok,ctx){var no=(i+1)+'차 보정',done=fxIsD(r.date),dd=f
     fs.length?fu:h('p',{class:'sub fx__nof',text:'보정명령서·보정서·준비 자료 파일을 올려 보관합니다.'}),fin,nt));
   return el}
 function fxPanel(c,ok,ctx){var list=fxList(c),box=h('div',{class:'fx','data-fx':ctx});
-  box.appendChild(h('div',{class:'fx__hd'},h('h5',{text:'보정 '+(list.length?list.length+'건':'')}),h('span',{class:'sub',text:'보정명령이 올 때마다 하나씩 더합니다. 처리일을 적으면 처리 완료로 바뀝니다.'})));
+  box.appendChild(h('div',{class:'fx__hd'},h('h5',{text:'보정 '+(list.length?list.length+'건':'')}),h('span',{class:'sub',text:'보정명령이 올 때마다 하나씩 더합니다. 「✓ 보정 완료」를 누르면 처리일에 오늘 날짜가 들어가고 완료로 바뀝니다(처리일은 고칠 수 있음).'})));
   if(!list.length)box.appendChild(h('div',{class:'fx__none',text:'아직 적어 둔 보정이 없습니다.'}));
   list.forEach(function(r,i){box.appendChild(fxRound(c,r,i,ok,ctx))});
   if(ok)box.appendChild(h('button',{class:'btn btn--sm btn--line fx__add',type:'button','data-fxadd':ctx,text:'+ 보정 추가',onclick:function(e){e.currentTarget.disabled=true;fxAdd(c)}}));
@@ -12345,7 +12390,7 @@ function s4Stage(c,k,ok,pane){var cur=st4Of(c);
   if(k<cur&&s4d(c,k).backWhy)pane.appendChild(h('div',{class:'note'},'되돌린 적 있음 · 까닭: '+s4d(c,k).backWhy));
   if(k===1)s4Lay(c,'1',ok,pane,{due:1,log:1});
   else if(k===2){var sub=D.s4sub2||'2a';pane.appendChild(s4SubTabs(c,[['2a','상담 때 / 확정 비교'],['2b','복도깨비 1차 결과'],['2c','2차 상담 내용']],sub,function(t){D.s4sub2=t;D.s4box=null}));
-    var sp=h('div',{class:'s4-special'});sp.appendChild(sub==='2a'?s4CmpPanel(c,ok):sub==='2b'?s4BdkPanel(c,ok):c2Panel(c,ok));pane.appendChild(sp);s4Lay(c,sub,ok,pane,{due:2})}
+    var sp=h('div',{class:'s4-special s4-special--low','data-sp2':sub});sp.appendChild(sub==='2a'?s4CmpPanel(c,ok):sub==='2b'?s4BdkPanel(c,ok):c2Panel(c,ok));s4Lay(c,sub,ok,pane,{due:2,pre:sp})}
   else if(k===3){var s3=D.s4sub3||'3',fo=fxOpen(c).length;pane.appendChild(s4SubTabs(c,[['3','법원 진행'],['fx','보정'+(fo?' '+fo+'건':'')]],s3,function(t){D.s4sub3=t;D.s4box=null}));
     if(s3==='fx')s4FixPane(c,ok,pane);else{pane.appendChild(s4Court(c,ok));s4Lay(c,'3',ok,pane,{due:3})}}
   else s4ClosePane(c,ok,pane)}
@@ -12451,7 +12496,7 @@ function s4BoxDetail(c,b,ok,mode){var fs=s4BFiles(c,b),st=s4State(c,b,fs),late=s
   var logBox=h('div',{class:'s4-bd__log'},h('div',{class:'s4-lab s4-lab--row'},h('span',{text:'요청 기록'}),rl.length>3?h('button',{class:'s4-link',type:'button','data-ro-ok':'1','aria-expanded':lall?'true':'false',text:lall?'접기':rl.length+'개 모두 보기',onclick:function(){D.s4lall[b.id]=!lall;s4Draw(curCase()||c,true)}}):null),rl.length?lu:h('p',{class:'sub',text:'기록 없음'}));
   var mi=h('input',{class:'inp',maxlength:'120',placeholder:'예) 3쪽이 흐림 — 필요하면 보완 요청','aria-label':'박스 메모',disabled:!ok,'data-bxmemo':b.id});mi.value=b.memo||'';mi.addEventListener('change',function(){var u={bx:{}};u.bx[b.id]={memo:mi.value.trim()};s4Up(c,u).catch(fail)});
   var memoF=h('label',{class:'s4-bd__f'},h('span',{class:'s4-lab',text:'박스 메모'}),mi),info=h('div',{class:'s4-bd__info'});
-  if(st==='closed'){info.appendChild(h('details',{class:'s4-bd__past'},h('summary',null,'요청했던 내용',r?h('span',{class:'sub',text:' · '+String([r.docs,r.desc].filter(Boolean).join(' ')).replace(/[·\-\s]+/g,' ').trim().slice(0,60)}):null),
+  if(st==='closed'){info.appendChild(h('details',{class:'s4-bd__past'},h('summary',{title:'눌러서 펼치기·접기'},h('span',{class:'s4-past__t',text:'요청했던 내용'}),h('span',{class:'s4-past__tg','aria-hidden':'true'})),
       h('div',{class:'s4-quote',text:r?[r.docs,r.desc].filter(Boolean).join('\n\n')||'(설명 없음)':'(요청 없이 닫음)'})));info.appendChild(memoF);info.appendChild(logBox)}
   else if(!r){info.appendChild(h('div',null,h('div',{class:'s4-lab',text:t&&(t.docs||t.desc)?'보낼 서류 (설정의 기본값 · 보낼 때 고칠 수 있음)':'요청'}),
       t&&(t.docs||t.desc)?h('div',{class:'s4-quote',text:[t.docs,t.desc].filter(Boolean).join('\n')}):h('p',{class:'sub',text:ok?'아직 의뢰인에게 요청하지 않았습니다. 「파일 요청」을 누르면 요청할 서류·설명·기한을 정해 보냅니다.':'아직 요청하지 않았습니다.'})));
@@ -12514,7 +12559,7 @@ function s4Lay(c,p,ok,pane,o){var bs=s4Boxes(c,p),sel=s4Sel(c,bs),pick=!!(sel&&s
   right.appendChild(sel?s4BoxDetail(c,sel,ok,'list'):h('div',{class:'s4-bd s4-bd--empty'},h('p',{class:'sub',text:ok?'이 칸에는 아직 파일 박스가 없습니다. 「+ 추가」로 만들면 의뢰인에게 파일을 요청하거나 바로 올릴 수 있습니다.':'이 칸에는 파일 박스가 없습니다.'})));
   g.appendChild(left);g.appendChild(mid);g.appendChild(right);var lay=h('div',{class:'s4-lay'},s4ChkBar(c,p,o,g),g),memo=s4MemoCard(c,p,ok,p==='1'?'1단계 메모':/^2/.test(p)?'메모 · '+ST4_PN[p]:p==='3'?'3단계 메모':'메모');
   /* v187: 1단계는 큰 화면에서 메모장 바로 아래 단계 기록(맨 아래 전체 폭), 좁은 화면은 단계 기록이 왼쪽 칸 */
-  if(o.log){var lgw=s4LogCard(c);lgw.classList.add('s4-logw');pane.appendChild(h('div',{class:'s4-st1'},lay,memo,lgw))}else{pane.appendChild(lay);pane.appendChild(memo)}}
+  if(o.log){var lgw=s4LogCard(c);lgw.classList.add('s4-logw');pane.appendChild(h('div',{class:'s4-st1'},lay,memo,lgw))}else{pane.appendChild(lay);if(o.pre)pane.appendChild(o.pre);pane.appendChild(memo)}}
 /* 좁은 화면: 체크리스트 칸을 한 줄로 접어 둠 */
 function s4ChkBar(c,p,o,g){var list=s4Chks(c,p),left=list.filter(function(x){return !x.done}),d=o.due?s4d(c,o.due):{},dd=s4DD(d.due),tg=h('span',{class:'s4-chkbar__t',text:D.s4chk?'접기 ▴':'펼치기 ▾'});
   var b=h('button',{type:'button',class:'s4-chkbar','aria-expanded':D.s4chk?'true':'false','data-ro-ok':'1','data-chkbar':p,onclick:function(){D.s4chk=!D.s4chk;g.classList.toggle('is-chk',!!D.s4chk);b.setAttribute('aria-expanded',D.s4chk?'true':'false');tg.textContent=D.s4chk?'접기 ▴':'펼치기 ▾'}},
@@ -13456,14 +13501,18 @@ function calMap(){var map={},put=function(d,it){(map[d]=map[d]||[]).push(it)};
 function calCid(it){var c=it.ev&&it.ev.consultId;return typeof c==='string'&&consultRow(c)?c:''}
 function calGo(y,m){var d=new Date(y,m,1);calY=d.getFullYear();calM=d.getMonth()}
 function calPick(date){calSel=date;var y=+date.slice(0,4),m=+date.slice(5,7)-1;if(y!==calY||m!==calM)calGo(y,m);if(!evEdit)$('#evDate').value=date;renderCal()}
+/* v195: 날짜 칸 개수 — 상담 / 업무(의뢰인 업무 기한·진행 단계·업무 과제·업무에 연결된 일정) / 그 외 일정 */
+var CAL_CNT=[['f','보정'],['c','상담'],['w','업무'],['e','그 외']];
+/* v196: 보정 = 진행 단계의 보정기한(go fx) · 제목에 「보정」이 든 일정 */
+function calIsFx(it){return it.go==='fx'||(!!it.ev&&/보정/.test(it.title||''))}
+function calCount(items){var n={f:0,c:0,w:0,e:0};items.forEach(function(it){if(calIsFx(it))n.f++;else if(it.kind==='consult')n.c++;else if(it.kind==='case'||it.kind==='task'||(it.ev&&calCaseOf(it.ev)))n.w++;else n.e++});return n}
 function renderCal(){
   var map=calMap(),td=today(),first=new Date(calY,calM,1),start=new Date(calY,calM,1-first.getDay()),grid=$('#calGrid'),weeks=Math.ceil((first.getDay()+new Date(calY,calM+1,0).getDate())/7);
   $('#calTitle').textContent=calY+'년 '+(calM+1)+'월';grid.textContent='';
   for(var i=0;i<weeks*7;i++)(function(d){var date=ymd(d),items=dayItems(map,date),out=d.getMonth()!==calM,evs=h('span',{class:'cal__evs'});
-    items.slice(0,CAL_N).forEach(function(it){var cid=calCid(it),kid=cid?'':calItemCase(it);evs.appendChild(h('span',{class:'cal__ev k-'+it.kind,'data-cid':cid||null,'data-case':kid||null,'data-c2':kid&&it.ev&&calIsC2(it.ev)?'1':null,'data-go':it.go||null,title:(it.time?it.time+' ':'')+it.title+(cid?' · 눌러서 상담 상세보기':kid?' · 눌러서 의뢰인 업무 상세보기':''),text:(it.time?shortTime(it.time)+' ':'')+it.title}))});
-    if(items.length>CAL_N)evs.appendChild(h('span',{class:'cal__more',text:'+'+(items.length-CAL_N)}));
-    grid.appendChild(h('button',{class:'cal__cell'+(out?' is-out':'')+(date===td?' is-today':'')+(date===calSel?' is-sel':'')+(d.getDay()===0?' is-sun':''),type:'button','aria-pressed':date===calSel?'true':'false',
-      'aria-label':(d.getMonth()+1)+'월 '+d.getDate()+'일'+(items.length?', 일정 '+items.length+'건':''),onclick:function(e){var ch=e.target.closest&&e.target.closest('[data-cid]'),cid=ch&&ch.offsetWidth>12?ch.getAttribute('data-cid'):'',kc=!cid&&e.target.closest&&e.target.closest('[data-case]'),kid=kc&&kc.offsetWidth>12?kc.getAttribute('data-case'):'',k2=!!kc&&kc.getAttribute('data-c2')==='1';calPick(date);if(cid)openPend(cid);else if(kid){var g2=kc.getAttribute('data-go');if(g2)s4Go(kid,g2);else calCaseGo(kid,k2)}}},h('span',{class:'cal__d',text:String(d.getDate())}),evs))})(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
+    var cn=calCount(items),cnt=[];CAL_CNT.forEach(function(x){if(cn[x[0]]){cnt.push(x[1]+' '+cn[x[0]]+'건');evs.appendChild(h('span',{class:'cal__cnt cal__cnt--'+x[0],'data-cnt':x[0],title:x[1]+' '+cn[x[0]]+'건 · 자세한 일정은 오른쪽 목록'},h('i',{'aria-hidden':'true'}),h('span',{class:'cal__cnt-l',text:x[1]}),h('b',{text:String(cn[x[0]])})))}});
+    grid.appendChild(h('button',{class:'cal__cell'+(cn.f?' is-fx':'')+(out?' is-out':'')+(date===td?' is-today':'')+(date===calSel?' is-sel':'')+(d.getDay()===0?' is-sun':''),type:'button','aria-pressed':date===calSel?'true':'false',
+      'aria-label':(d.getMonth()+1)+'월 '+d.getDate()+'일'+(cnt.length?', '+cnt.join(', '):''),onclick:function(e){var ch=e.target.closest&&e.target.closest('[data-cid]'),cid=ch&&ch.offsetWidth>12?ch.getAttribute('data-cid'):'',kc=!cid&&e.target.closest&&e.target.closest('[data-case]'),kid=kc&&kc.offsetWidth>12?kc.getAttribute('data-case'):'',k2=!!kc&&kc.getAttribute('data-c2')==='1';calPick(date);if(cid)openPend(cid);else if(kid){var g2=kc.getAttribute('data-go');if(g2)s4Go(kid,g2);else calCaseGo(kid,k2)}}},h('span',{class:'cal__d',text:String(d.getDate())}),evs))})(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
   /* 고른 날 */
   var sd=new Date(+calSel.slice(0,4),+calSel.slice(5,7)-1,+calSel.slice(8,10)),list=$('#calList'),its=dayItems(map,calSel);
   $('#calDay').textContent=(sd.getMonth()+1)+'월 '+sd.getDate()+'일 ('+DOW[sd.getDay()]+')'+(calSel===td?' · 오늘':'');list.textContent='';
