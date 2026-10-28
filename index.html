@@ -4922,6 +4922,56 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
   .ccb.is-open{padding:15px 13px}
 }
 @media (prefers-reduced-motion:reduce){.cctodo__r{transition:none}}
+/* ── v200 의뢰인 대화: 메신저 · 사진·파일 ── */
+.ccchat__hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ccchat__av{flex:none;width:40px;height:40px;border-radius:50%;background:var(--apricot);display:grid;place-items:center;font-weight:800;font-size:15px}
+.ccchat__ti{flex:1;min-width:0;display:flex;flex-direction:column}
+.ccchat__ti h3{margin:0;font-size:18px;font-weight:800}
+.ccchat__s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccchat__tel{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;background:var(--paper)}
+.ccchat__tel svg{width:18px;height:18px}
+.ccchat__tel:hover{border-color:var(--apricot-deep);color:var(--apricot-deep)}
+#ccChatCard .msgs--sm{height:min(64vh,620px);background:#f8f4f0}
+#ccChatCard{position:relative}
+#ccCompose{position:relative;display:flex;align-items:flex-end;gap:8px}
+#ccCompose textarea{flex:1;min-width:0}
+.ccatt{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .15s}
+.ccatt svg{width:22px;height:22px}
+.ccatt:hover{background:var(--apricot-soft);border-color:var(--apricot-deep)}
+.ccatt[aria-expanded="true"]{transform:rotate(45deg);background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.ccatt:focus-visible{outline:2px solid var(--apricot-deep);outline-offset:2px}
+.ccatt__m{position:absolute;left:8px;bottom:calc(100% + 6px);z-index:5;display:flex;flex-direction:column;min-width:200px;background:var(--paper);border:1px solid var(--line);box-shadow:0 18px 40px -18px rgba(21,18,15,.45);padding:6px}
+.ccatt__m button{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;border:0;background:none;font:inherit;font-size:16px;font-weight:700;color:var(--ink);text-align:left;cursor:pointer}
+.ccatt__m button svg{width:24px;height:24px;color:var(--apricot-deep)}
+.ccatt__m button:hover,.ccatt__m button:focus-visible{background:var(--apricot-soft)}
+.ccdrop{position:absolute;inset:60px 12px 70px;z-index:6;display:grid;place-items:center;border:2px dashed var(--apricot-deep);background:rgba(252,241,232,.94);font-size:16px;font-weight:800;color:var(--apricot-deep);pointer-events:none}
+/* 파일 말풍선 */
+.cfm{display:flex;align-items:center;gap:10px;max-width:280px;padding:10px 12px;border:1px solid var(--line);background:#fff;border-radius:16px 16px 16px 5px;color:var(--ink);text-decoration:none;text-align:left}
+.msg.mine .cfm{margin-left:auto;border-radius:16px 16px 5px 16px;background:#fff7f0;border-color:#efd3bd}
+.cfm:hover{border-color:var(--apricot-deep)}
+.cfm__ext{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:10px;background:#eef0fb;color:#3d4a9a;font-size:11.5px;font-weight:800}
+.cfm__ext.is-pdf{background:#fbe9e7;color:#b3261e}
+.cfm__t{min-width:0;display:flex;flex-direction:column;gap:2px}
+.cfm__t b{font-size:14.5px;font-weight:700;overflow-wrap:anywhere;line-height:1.35}
+.cfm__t span{font-size:12px;color:var(--muted)}
+.cfm--img{padding:0;border:0;background:none;border-radius:16px;overflow:hidden;max-width:230px}
+.msg.mine .cfm--img{background:none}
+.cfm--img img{display:block;width:100%;max-height:300px;object-fit:cover;border-radius:16px;background:#ece5de;min-height:80px;min-width:120px}
+@media (max-width:720px){
+  html.cc-chatfull,html.cc-chatfull body{overflow:hidden;overscroll-behavior:none}
+  #cCase[data-pane="c"] #ccChatCard{position:fixed;top:0;left:0;right:0;bottom:calc(66px + env(safe-area-inset-bottom,0px));z-index:55;margin:0;padding:0;border:0;display:flex;flex-direction:column;background:#f6f1ec}
+  #cCase[data-pane="c"] .ccchat__hd{flex:none;margin:0;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--ink);color:var(--on-ink)}
+  #cCase[data-pane="c"] .ccchat__ti h3{font-size:17px;color:var(--on-ink)}
+  #cCase[data-pane="c"] .ccchat__s{color:rgba(247,242,237,.7)}
+  #cCase[data-pane="c"] .ccchat__tel{background:transparent;color:var(--on-ink);border-color:rgba(247,242,237,.35)}
+  #cCase[data-pane="c"] .msgs--sm{flex:1 1 auto;height:auto!important;min-height:0;margin:0;border:0;background:#f6f1ec;padding:14px 12px 20px}
+  #cCase[data-pane="c"] #ccCompose{position:relative;bottom:auto;flex:none;padding:8px 10px;background:var(--paper);border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end}
+  #cCase[data-pane="c"] #ccCompose textarea{border-radius:22px;padding:11px 16px;min-height:44px;height:44px;background:#f4efea;border-color:transparent}
+  #cCase[data-pane="c"] #ccCompose .btn{min-height:44px;border-radius:22px;padding:0 16px}
+  #cCase[data-pane="c"] #ccChatNote{position:absolute;left:12px;right:12px;top:calc(72px + env(safe-area-inset-top,0px));margin:0;z-index:4;pointer-events:none;box-shadow:0 10px 24px -14px rgba(21,18,15,.5)}
+  #cCase[data-pane="c"] .msg{max-width:90%}
+  .cfm--img{max-width:210px}
+}
 </style>
 <script>
 (function(){try{if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim')}catch(e){}})();
@@ -5452,10 +5502,13 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
         <div class="note" id="ccFileNote" role="status" hidden></div>
       </div>
       <div class="mycase__card" data-ccp="c" id="ccChatCard">
-        <h3>담당자와 대화</h3>
-        <p class="sub">남기신 메시지는 사무소 담당자가 확인하고 답변드립니다. 급한 일은 전화(<a class="tel" href="tel:0510000000">051-000-0000</a>)로 연락해 주세요.</p>
+        <div class="ccchat__hd"><span class="ccchat__av" aria-hidden="true">센</span><div class="ccchat__ti"><h3>담당자와 대화</h3><span class="ccchat__s">센텀 법무사 사무소 · 평일 9시–18시</span></div><a class="ccchat__tel" href="tel:0510000000" aria-label="사무소에 전화하기 051-000-0000"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5l2.6 3.4-1.6 2.3a12 12 0 0 0 7.2 7.2l2.3-1.6 3.4 2.6-1.3 3.1C11.4 20.8 3.2 12.6 3.5 4.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>전화</span></a></div>
         <div class="msgs msgs--sm" id="ccMsgs" aria-live="polite"></div>
+        <div class="ccdrop" id="ccChatDrop" hidden>여기에 놓으면 담당자에게 보냅니다</div>
         <form class="compose" id="ccCompose">
+          <button class="ccatt" type="button" id="ccAtt" aria-label="사진·파일 보내기" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+          <div class="ccatt__m" id="ccAttM" role="menu" hidden><button type="button" role="menuitem" data-att="cam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>사진 찍기</button><button type="button" role="menuitem" data-att="pick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 15l5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>앨범·파일</button></div>
+          <input type="file" id="ccChCam" accept="image/*" capture="environment" hidden><input type="file" id="ccChPick" multiple accept="image/*,.pdf,.txt,.csv" hidden>
           <textarea class="inp" id="ccText" maxlength="1000" placeholder="메시지 입력" aria-label="메시지"></textarea>
           <button class="btn" type="submit">보내기</button>
         </form>
@@ -9315,7 +9368,7 @@ async function drawChat(box,msgs,viewer,o){
       cont=!brk&&!!prev&&prev.from===m.from&&(prev.uid||'')===(m.uid||'')&&m.at-prev.at<120000&&m.at>=prev.at&&hsig===psig,re=ccRe(m.re);prev=m;psig=hsig;
     box.appendChild(h('div',{class:'msg'+(mine?' mine':'')+(cont?' msg--cont':'')+(o.rxOpen&&o.rxOpen===m.id?' msg--rx':''),'data-cmid':m.id||null,onclick:viewer==='staff'?msgTap:null},
       mine?null:cont?h('span',{class:'msg__gap'}):h('span',{class:'msg__sys',text:viewer==='client'?'센':(o.clientName||'의').slice(0,1)}),
-      h('div',{class:'msg__bd'},cont?null:h('div',{class:'msg__hd'},h('b',{text:who}),h('span',{text:fmtTime(m.at)}),rdx),re?ccQuote(re,viewer,o,box):null,rtTextEl('div','msg__tx',m.text||''),ccRxRow(m,viewer,o),
+      h('div',{class:'msg__bd'},cont?null:h('div',{class:'msg__hd'},h('b',{text:who}),h('span',{text:fmtTime(m.at)}),rdx),re?ccQuote(re,viewer,o,box):null,m._file?ccFileBubble(m._file,viewer):rtTextEl('div','msg__tx',m.text||''),ccRxRow(m,viewer,o),
         viewer==='staff'&&o.acts?o.acts(m,who):null,viewer==='staff'&&o.rxOpen===m.id&&o.pick?o.pick(m):null)));
   });
   if(o.jump&&o.jump.on&&o.ready){o.jump.on=false;if(divEl)box.scrollTop+=divEl.getBoundingClientRect().top-box.getBoundingClientRect().top-10;else box.scrollTop=box.scrollHeight}
@@ -14134,7 +14187,7 @@ var K={key:null,caseId:null,msgs:[],files:[],unsubs:[],ready:{},busy:false,stick
 function sess(v){try{if(v===undefined)return sessionStorage.getItem('centum.trk');if(v===null)sessionStorage.removeItem('centum.trk');else sessionStorage.setItem('centum.trk',v)}catch(e){return null}}
 function setMode(){$('#loginForm').hidden=false} /* 온라인 사건 접수는 없앴다: 조회 양식만 둔다 */
 function dropClient(){K.unsubs.forEach(function(u){u()});K.unsubs=[];K.trk=null;K.ckNt={};K.key=null;K.caseId=null;K.msgs=[];K.files=[];K.ready={};K.read={};K.divAt=0}
-function logout(msg){dropClient();sess(null);$('#cCase').hidden=true;$('#cLogin').hidden=false;setMode('lookup');$('#lgCode').value='';var n=$('#lgNote');if(msg)note(n,'bad',msg);else n.hidden=true;window.scrollTo(0,0)}
+function logout(msg){document.documentElement.classList.remove('cc-chatfull');dropClient();sess(null);$('#cCase').hidden=true;$('#cLogin').hidden=false;setMode('lookup');$('#lgCode').value='';var n=$('#lgNote');if(msg)note(n,'bad',msg);else n.hidden=true;window.scrollTo(0,0)}
 function renderTrack(t){
   K.caseId=t.caseId||null;K.trk=t;
   var st=Math.max(0,Math.min(3,t.stage|0)),when={};(t.history||[]).forEach(function(x){when[x.s]=x.at});
@@ -14987,12 +15040,13 @@ var CC_MQ=window.matchMedia?window.matchMedia('(max-width:720px)'):{matches:fals
 function ccMob(){return !!CC_MQ.matches}
 function ccPane(p,scroll){if(!/^[sdc]$/.test(p))p='s';K.pane=p;try{sessionStorage.setItem('centum.ccp',p)}catch(e){}var cs=$('#cCase');if(cs)cs.setAttribute('data-pane',p);
   $$('#ccNav [data-ccnav]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-ccnav')===p?'true':'false')});
-  if(ccMob()&&scroll!==false)window.scrollTo(0,0);if(p==='c'){drawClientChat(true);seenTrack()}ccNavDraw()}
+  if(ccMob()&&scroll!==false)window.scrollTo(0,0);ccFull();if(p==='c'){drawClientChat(true);seenTrack()}ccNavDraw()}
+function ccFull(){document.documentElement.classList.toggle('cc-chatfull',ccMob()&&K.pane==='c'&&!!K.key&&!$('#client').hidden&&!$('#cCase').hidden)}
 function ccNavDraw(){var d=$('#ccNavD'),c=$('#ccNavC');if(!d||!c)return;var nd=(K.ckNeed|0)+(K.fNew|0),seen=Math.max(K.read&&K.read.c||0,K.key?readMap[trkId(K.key)]||0:0),
-  nc=(K.msgs||[]).filter(function(m){return m.from!=='client'&&typeof m.at==='number'&&m.at>seen}).length;if(ccMob()&&K.pane==='c')nc=0;
+  nc=ccChatList().filter(function(m){return m.from!=='client'&&typeof m.at==='number'&&m.at>seen}).length;if(ccMob()&&K.pane==='c')nc=0;
   d.hidden=!nd;d.textContent=nd>99?'99+':String(nd||'');c.hidden=!nc;c.textContent=nc>99?'99+':String(nc||'')}
 $$('#ccNav [data-ccnav]').forEach(function(b){b.addEventListener('click',function(){ccPane(b.getAttribute('data-ccnav'))})});
-if(CC_MQ.addEventListener)CC_MQ.addEventListener('change',function(){ccNavDraw();seenTrack()});
+if(CC_MQ.addEventListener)CC_MQ.addEventListener('change',function(){ccFull();ccNavDraw();seenTrack()});
 /* 사진 찍기(휴대폰 카메라 바로) + 파일·앨범에서 고르기 두 단추. 터치 화면이 아니면 「파일 올리기」 하나만 보인다 */
 function ccUpBtns(fn,o){o=o||{};var cam=h('input',{type:'file',accept:'image/*',capture:'environment',hidden:true}),pick=h('input',{type:'file',multiple:true,hidden:true,accept:o.accept||'image/*,.pdf,.txt,.csv'});
   [cam,pick].forEach(function(i){i.addEventListener('change',function(){var a=[].slice.call(i.files||[]);i.value='';if(a.length)fn(a)})});
@@ -15022,8 +15076,19 @@ function ccGoTodo(id){var m=/^bx:(.+)$/.exec(id),sel;if(m){K.bxOpen=K.bxOpen||{}
   if(ccMob())ccPane('d',false);drawClientCk();
   setTimeout(function(){var el=$(sel);if(!el)return;var top=el.getBoundingClientRect().top+window.scrollY-((($('#client .intra__top')||{}).offsetHeight)||0)-12;window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
     el.classList.remove('is-flash');void el.offsetWidth;el.classList.add('is-flash');var b=el.querySelector('.ccup__b--cam:not([hidden]),.ccup__b--pick,[data-ckup]');if(b&&b.offsetParent)try{b.focus({preventScroll:true})}catch(e){}},30)}
-function drawClientFiles(){K.fNew=fileSplit($('#ccFiles'),K.files,{key:K.key,noteEl:$('#ccFileNote'),viewer:'client',redraw:drawClientFiles,ready:K.ready.files});newPill($('#ccNewN'),K.fNew);drawClientCk()}
-function drawClientChat(force){var f=force||K.stick;K.stick=false;drawChat($('#ccMsgs'),K.msgs,'client',{ready:K.ready.msgs,force:f,divAt:K.divAt,jump:K.jump,peerAt:K.read.s});ccNavDraw()}
+/* v200: 대화에 주고받은 파일도 시간순으로(서류 상자·체크 항목에 올린 파일은 「서류」 탭에만) */
+function ccChatFiles(){return (K.files||[]).filter(function(f){return f&&typeof f.asset==='string'&&typeof f.at==='number'&&!f.bx&&!f.ck})}
+function ccChatList(){var l=(K.msgs||[]).slice();ccChatFiles().forEach(function(f){l.push({id:'f_'+f.id,from:f.from==='client'?'client':'staff',uid:f.uid||'',at:f.at,_file:f})});
+  return l.sort(function(a,b){return (a.at||0)-(b.at||0)})}
+function ccFileBubble(f,viewer){var img=/^image\/(jpeg|png|gif|webp)$/.test(f.type||''),got=viewer==='client'?f.from!=='client':f.from==='client',
+  a=h('a',{class:'cfm'+(img?' cfm--img':''),href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-cfm':f.id||'',onclick:function(){if(got&&K.key)setTimeout(function(){markGot({viewer:'client',key:K.key},f)},0)}});
+  pvAttrs(a,f,f.from==='client'?'client':(f.uid||''),f.at);
+  if(img)a.appendChild(h('img',{src:'/centum-intranet-test/_blob/'+f.asset,alt:f.name||'사진',loading:'lazy',decoding:'async'}));
+  else{var ext=String(f.name||'').split('.').pop().toUpperCase().slice(0,4)||'파일';a.appendChild(h('span',{class:'cfm__ext'+(ext==='PDF'?' is-pdf':''),text:ext}));
+    a.appendChild(h('span',{class:'cfm__t'},h('b',{text:f.name||'파일'}),h('span',{text:[+f.size?fmtSize(+f.size):'','눌러서 열기'].filter(Boolean).join(' · ')})))}
+  return a}
+function drawClientFiles(){K.fNew=fileSplit($('#ccFiles'),K.files,{key:K.key,noteEl:$('#ccFileNote'),viewer:'client',redraw:drawClientFiles,ready:K.ready.files});newPill($('#ccNewN'),K.fNew);drawClientCk();drawClientChat()}
+function drawClientChat(force){var f=force||K.stick;K.stick=false;drawChat($('#ccMsgs'),ccChatList(),'client',{ready:K.ready.msgs,force:f,divAt:K.divAt,jump:K.jump,peerAt:K.read.s});ccNavDraw()}
 /* 진행 조회 화면을 보고 있으면 의뢰인이 읽은 것으로 적는다(사무소 화면에 「의뢰인 읽음」으로 보인다) */
 function seenTrack(){if(!K.key||!K.ready.msgs||$('#client').hidden||$('#cCase').hidden||document.hidden||(ccMob()&&K.pane!=='c'))return;var at=lastAt(K.msgs);if(!at)return;
   markRead(trkId(K.key),at);pubRead('trk:'+K.key,infoRead(K.key),at,K.read.c,'c',true)}
@@ -15037,7 +15102,7 @@ async function watchTrack(key,fromLogin){
   K.key=key;K.divAt=readMap[trkId(key)]||0;K.jump={on:true};sess(key);$('#lgNote').hidden=true;$('#cLogin').hidden=true;$('#cCase').hidden=false;
   $('#ccText').value='';$('#ccFileNote').hidden=true;$('#ccChatNote').hidden=true;
   var p0='s';try{p0=sessionStorage.getItem('centum.ccp')||'s'}catch(e){}ccPane(p0,false);renderTrack(sn.data());drawClientFiles();drawClientChat(true);
-  var canUp=!!(C&&C.assets);$('#ccPick').hidden=!canUp;$('#ccCamBtn').hidden=!canUp;
+  var canUp=!!(C&&C.assets);$('#ccPick').hidden=!canUp;$('#ccCamBtn').hidden=!canUp;if(window.ccAttReady)ccAttReady(canUp);ccFull();
   $('#ccDropText').textContent=canUp?'파일을 여기로 끌어다 놓거나 오른쪽 버튼으로 선택하세요. PDF와 사진(JPG, PNG)을 20MB까지 보낼 수 있습니다.':'지금은 이 화면에서 파일을 보낼 수 없습니다. 서류는 담당자에게 직접 전달해 주세요.';
   K.unsubs.push(ref.onSnapshot(function(s2){if(s2.exists){renderTrack(s2.data());drawClientCk()}else if(!(s2.metadata&&s2.metadata.fromCache))logout('조회 정보가 변경되었습니다. 사무소에 문의해 주세요.')},function(){}));
   K.unsubs.push(tref(key).collection('chat').orderBy('at','desc').limit(200).onSnapshot(function(s){K.msgs=rows(s).reverse();K.ready.msgs=1;seenTrack();drawClientChat()},function(){}));
@@ -15060,6 +15125,20 @@ $('#loginForm').addEventListener('submit',async function(e){e.preventDefault();v
   try{await getCtx();if(!C.db)throw new Error('no-db');await watchTrack(await trackKey(nm,code),true)}
   catch(err){note(n,'bad','지금은 조회 서비스를 이용할 수 없습니다. 전화(051-000-0000)로 문의해 주세요.');$('#lgBtn').disabled=false}});
 
+/* v200: 대화 「+」 — 휴대폰은 사진 찍기 / 앨범·파일 고르기, 컴퓨터는 바로 파일 고르기. 컴퓨터에서는 대화 칸에 끌어다 놓아도 됨 */
+(function(){var att=$('#ccAtt'),m=$('#ccAttM'),cam=$('#ccChCam'),pick=$('#ccChPick'),touch=window.matchMedia&&window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+  function close(){m.hidden=true;att.setAttribute('aria-expanded','false')}
+  function go(fs){if(!fs.length||!K.key)return;K.stick=true;var nt=$('#ccChatNote');sendFiles(K.key,fs,'client',nt,K.caseId).then(function(){K.stick=true;drawClientChat(true);if(/note--ok/.test(nt.className))setTimeout(function(){if(/note--ok/.test(nt.className))nt.hidden=true},1800)})}
+  att.addEventListener('click',function(e){e.stopPropagation();if(!touch){pick.click();return}var o=m.hidden;m.hidden=!o;att.setAttribute('aria-expanded',o?'true':'false')});
+  m.addEventListener('click',function(e){var b=e.target.closest('[data-att]');if(!b)return;close();(b.getAttribute('data-att')==='cam'?cam:pick).click()});
+  document.addEventListener('click',function(e){if(!m.hidden&&!m.contains(e.target))close()});
+  [cam,pick].forEach(function(i){i.addEventListener('change',function(){var a=[].slice.call(i.files||[]);i.value='';go(a)})});
+  var card=$('#ccChatCard'),dz=$('#ccChatDrop'),dn=0;
+  card.addEventListener('dragenter',function(e){if(!e.dataTransfer||[].indexOf.call(e.dataTransfer.types||[],'Files')<0)return;e.preventDefault();dn++;dz.hidden=false});
+  card.addEventListener('dragover',function(e){if(!dz.hidden)e.preventDefault()});
+  card.addEventListener('dragleave',function(){if(--dn<=0){dn=0;dz.hidden=true}});
+  card.addEventListener('drop',function(e){if(dz.hidden)return;e.preventDefault();dn=0;dz.hidden=true;go([].slice.call(e.dataTransfer.files||[]))});
+  window.ccAttReady=function(can){att.hidden=!can}})();
 $('#ccOut').addEventListener('click',function(){logout()});
 bindDrop($('#ccDrop'),$('#ccFile'),$('#ccPick'),function(files){sendFiles(K.key,files,'client',$('#ccFileNote'),K.caseId)});
 $('#ccCamBtn').addEventListener('click',function(){$('#ccCam').click()});$('#ccCam').addEventListener('change',function(){var i=$('#ccCam'),a=[].slice.call(i.files||[]);i.value='';if(a.length)sendFiles(K.key,a,'client',$('#ccFileNote'),K.caseId)});
