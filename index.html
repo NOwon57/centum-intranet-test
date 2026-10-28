@@ -35,7 +35,12 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
 /* 시험 서버는 인트라넷만: 홈페이지로 가는 단추는 숨김 */
 #intra .intra__top a.btn[data-view="site"]{display:none}
 #intra .intra__top a.brand[data-view="site"]{pointer-events:none}
-</style></head><body><script>window.__SBX={"url": "https://tgnzmwvfvackjldwngxn.supabase.co", "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnbnptd3ZmdmFja2psZHduZ3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzY1NDEsImV4cCI6MjEwODI1MjU0MX0.YgpXVAHXFibMACKUxGV6UegoZMvTFwSFma_xkdjYHQU", "base": "/centum-intranet-test/", "lib": ["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js", "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js", "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"]};</script><script>/* ═══ 센텀 인트라넷 · Supabase 시험 서버 연결 부품 ═══
+
+/* 의뢰인 진행 조회(로그인 없음): 홈페이지로 가는 단추는 숨김(시험 서버는 조회만) */
+html.sbx-client #client .intra__top a.btn[data-view="site"]{display:none}
+html.sbx-client #client .intra__top a.brand[data-view="site"]{pointer-events:none}
+html.sbx-client #site,html.sbx-client #intra{display:none!important}
+</style></head><body><script>window.__SBX={"url": "https://tgnzmwvfvackjldwngxn.supabase.co", "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnbnptd3ZmdmFja2psZHduZ3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzY1NDEsImV4cCI6MjEwODI1MjU0MX0.YgpXVAHXFibMACKUxGV6UegoZMvTFwSFma_xkdjYHQU", "base": "/centum-intranet-test/", "trkFn": "swift-endpoint", "lib": ["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js", "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js", "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"]};</script><script>/* ═══ 센텀 인트라넷 · Supabase 시험 서버 연결 부품 ═══
    인트라넷 화면은 Claude 아티팩트 저장소(window.claude.use('db'|'user'|'assets'|'downloads'))를 부르도록 만들어져 있다.
    이 파일은 같은 모양의 함수를 Supabase(서울)로 이어 준다. 화면 코드는 그대로 둔다.
    · db: public.docs 표(경로 = 문서 주소) + 실시간 반영. 읽기·쓰기 권한은 서버 보안 규칙(RLS)이 판단한다.
@@ -238,11 +243,126 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
     }
   };
 
+  /* ══ 의뢰인 진행 조회(로그인 없음) ══
+     주소가 #mypage 또는 #t=<조회 키>이면 이 모드로 연다. 의뢰인은 표(docs)를 직접 못 읽고 쓰며,
+     서버 함수 trk_read · trk_write(자기 조회 키 아래만)와 trk-file(파일)로만 다룬다. 실시간 대신 2초마다 다시 받는다(화면이 보일 때만). */
+  var CLIENT = /^#(mypage|t=[0-9a-f]{40})$/.test(location.hash || '');
+  var CK = null; /* 지금 보고 있는 조회 키 */
+  var TRK = /^track\/([0-9a-f]{40})\/(.+)$/;
+  var cc = Object.create(null), cw = new Set(), cTimer = 0;
+  function cSnapDoc(path) {
+    var e = cc[path];
+    return { id: idOf(path), exists: !!e, data: function () { return e ? e.d : undefined; }, metadata: { fromCache: false }, _rev: e ? e.rev : 0 };
+  }
+  function cRows(rows) { return (rows || []).map(function (x) { return { path: x.path, d: deepFreeze(x.data || {}), rev: x.rev }; }); }
+  function cKeyOf(path) { var m = TRK.exec(path); if (m) CK = m[1]; return m; }
+  async function cRead(path, isCol) {
+    var m = cKeyOf(path); if (!m) return isCol ? [] : null;
+    var rel = m[2]; if (isCol ? !/^(chat|files)$/.test(rel) : !/^info\/(main|read)$/.test(rel)) return isCol ? [] : null;
+    var r = await sb.rpc('trk_read', { p_key: m[1], p_rel: rel }); if (r.error) throw err(r.error);
+    var rows = cRows(r.data);
+    if (isCol) { cc[path] = rows; return rows; }
+    if (rows[0]) cc[path] = rows[0]; else delete cc[path]; return rows[0] || null;
+  }
+  async function cWrite(op, path, data) {
+    var m = cKeyOf(path); if (!m) throw { code: 'invalid_argument', message: 'denied' };
+    var r = await sb.rpc('trk_write', { p_key: m[1], p_op: op, p_rel: m[2], p_data: clean(data || {}) }); if (r.error) throw err(r.error);
+    setTimeout(cPoll, 30); return (r.data || [])[0] || null;
+  }
+  function cQuery(p, q) {
+    var rows = (cc[p] || []).map(function (x) { var e = x; return { id: idOf(x.path), exists: true, data: function () { return e.d; }, metadata: { fromCache: false }, _rev: x.rev }; });
+    rows = rows.filter(function (d) { return (q.where || []).every(function (w) { return test(d.data(), w); }); });
+    if (q.order) { var f = q.order[0], dsc = q.order[1] === 'desc'; rows.sort(function (a, b) { var x = a.data()[f], y = b.data()[f]; return (x < y ? -1 : x > y ? 1 : 0) * (dsc ? -1 : 1); }); }
+    if (q.limit) rows = rows.slice(0, q.limit);
+    return { docs: rows, size: rows.length, empty: !rows.length, docChanges: function () { return []; }, metadata: { fromCache: false }, forEach: function (fn) { rows.forEach(fn); } };
+  }
+  function cWatch(w) { cw.add(w); w.pull().then(function () { w.fire(); }, function (e) { if (w.onE) w.onE(err(e)); }); if (!cTimer) cTimer = setInterval(cPoll, 2000); return function () { cw.delete(w); }; }
+  var cBusy = false;
+  function cPoll() { if (cBusy || document.hidden) return; cBusy = true; Promise.all(Array.from(cw).map(function (w) { return w.pull().then(function () { w.fire(); }, function () {}); })).finally(function () { cBusy = false; }); }
+  document.addEventListener('visibilitychange', function () { if (CLIENT && !document.hidden) cPoll(); });
+  function cDocRef(path) {
+    var dref = {
+      id: idOf(path), path: path,
+      get: async function () { await READY; await cRead(path, false); return cSnapDoc(path); },
+      set: async function (d) { await READY; if (/\/info\/read$/.test(path)) { await cWrite('merge', path, { c: d && d.c }); return; } throw { code: 'invalid_argument', message: 'denied' }; },
+      update: async function (d) {
+        await READY;
+        if (/\/info\/read$/.test(path)) { await cWrite('merge', path, { c: d && d.c }); return; }
+        if (/\/files\/[^/]+$/.test(path)) { await cWrite('merge', path, { dlC: d && d.dlC }); return; }
+        if (/^cases\/[^/]+$/.test(path) && d && 'clientAt' in d && CK) { await cWrite('touch', 'track/' + CK + '/touch', {}); return; }
+        throw { code: 'invalid_argument', message: 'denied' };
+      },
+      delete: async function () { await READY; if (/\/(files|chat)\/[^/]+$/.test(path)) { await cWrite('delete', path); delete cc[path]; return; } throw { code: 'invalid_argument', message: 'denied' }; },
+      acquire: async function () { return { acquired: false, holder: '', expiresAt: new Date().toISOString() }; },
+      onSnapshot: function (fn, onE) {
+        var w = { last: null, onE: onE, pull: function () { return READY.then(function () { return cRead(path, false); }); },
+          fire: function () { var s = cSnapDoc(path), sig = s.exists + ':' + s._rev; if (sig === w.last) return; w.last = sig; try { fn(s); } catch (e) { setTimeout(function () { throw e; }); } } };
+        return cWatch(w);
+      },
+      collection: function (sub) { return cColRef(path + '/' + sub, {}); }
+    };
+    return dref;
+  }
+  function cColRef(p, q) {
+    function wq(x) { return cColRef(p, Object.assign({}, q, x)); }
+    return {
+      path: p, id: idOf(p),
+      where: function (f, op, v) { return wq({ where: (q.where || []).concat([[f, op, v]]) }); },
+      orderBy: function (f, d) { return wq({ order: [f, d || 'asc'] }); },
+      limit: function (n) { return wq({ limit: n }); },
+      get: async function () { await READY; await cRead(p, true); return cQuery(p, q); },
+      onSnapshot: function (fn, onE) {
+        var w = { last: null, onE: onE, pull: function () { return READY.then(function () { return cRead(p, true); }); },
+          fire: function () { var s = cQuery(p, q), sig = s.docs.map(function (d) { return d.id + ':' + d._rev; }).join(','); if (sig === w.last) return; w.last = sig; try { fn(s); } catch (e) { setTimeout(function () { throw e; }); } } };
+        return cWatch(w);
+      },
+      add: async function (d) { await READY; if (!/\/(chat|files)$/.test(p)) throw { code: 'invalid_argument', message: 'denied' }; var row = await cWrite('add', p, d); return cDocRef(row ? row.path : p + '/x'); },
+      doc: function (id) { return cDocRef(p + '/' + (id || genId(20))); }
+    };
+  }
+  var cdb = {
+    collection: function (p) { return cColRef(p, {}); },
+    doc: function (p) { if (p.split('/').length % 2) throw new TypeError('doc path parity'); return cDocRef(p); }
+  };
+  var cuser = {
+    me: async function () { return { id: '', name: '', avatarUrl: '', color: '#888', email: null, isOwner: false, canEdit: false }; },
+    id: async function () { return ''; }, isOwner: async function () { return false; }, canEdit: async function () { return false; },
+    can: async function (n) { return n === 'data.write'; }, profiles: async function (ids) { var o = {}; [].concat(ids || []).forEach(function (i) { o[i] = { id: i, name: '', avatarUrl: '', color: '#888', email: null, isMe: false, guest: false }; }); return o; },
+    search: async function () { return []; }
+  };
+  async function cFn(body) {
+    var r = await sb.functions.invoke(CFG.trkFn || 'trk-file', { body: body }), b = r.data;
+    if (r.error) { try { b = await r.error.context.json(); } catch (x) { b = null; } }
+    if (!b || !b.ok) { var c = b && b.error; throw { code: c === 'too_large' ? 'too_large' : c === 'rate' ? 'quota_or_state' : 'invalid_argument', message: c || 'failed' }; }
+    return b;
+  }
+  var cassets = {
+    upload: async function (f, o) {
+      await READY; if (!CK) throw { code: 'invalid_argument', message: 'no key' };
+      var type = (o && o.type) || f.type || 'application/octet-stream', s = await cFn({ action: 'sign', key: CK, type: type, size: f.size });
+      var u = await sb.storage.from('blobs').uploadToSignedUrl(s.path, s.token, f, { contentType: type, upsert: false });
+      if (u.error) throw err(u.error);
+      return { id: s.id, url: BLOB + s.id, sizeBytes: f.size, contentType: type };
+    },
+    delete: async function (id) { await READY; if (!CK) return { deleted: false }; await cFn({ action: 'del', key: CK, id: String(id) }); swPost({ type: 'forget', id: String(id) }); return { deleted: true }; },
+    list: async function () { return { assets: [], usage: {} }; }
+  };
+  async function bootClientMode() {
+    document.documentElement.classList.add('sbx-client');
+    try { if (!window.supabase) await loadScript(CFG.lib); } catch (e) { readyRes(); return; }
+    sb = window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'centum-sbx-client' } });
+    await swReady();
+    readyRes();
+    /* 조회 화면이 아닌 곳(#intranet 등)으로 가면 직원용으로 다시 연다 */
+    window.addEventListener('hashchange', function () { var hsh = location.hash || ''; if (!/^#(mypage|t=[0-9a-f]{40})$/.test(hsh)) location.reload(); });
+    setInterval(function () { if (CK) swPost({ type: 'client', key: CK }); }, 3000);
+  }
+
   window.claude = {
     use: async function (n) {
       if (n === 'sample') return null; /* AI는 시험 서버에서 꺼 둠 */
       await READY;
-      return { db: db, user: user, assets: assets, downloads: downloads }[n] || null;
+      return (CLIENT ? { db: cdb, user: cuser, assets: cassets, downloads: downloads } : { db: db, user: user, assets: assets, downloads: downloads })[n] || null;
     }
   };
 
@@ -250,7 +370,7 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
   function swPost(m) { try { var c = navigator.serviceWorker && navigator.serviceWorker.controller; if (c) c.postMessage(m); } catch (e) {} }
   async function swReady() {
     if (!('serviceWorker' in navigator)) return false;
-    navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.type === 'token?' && e.ports && e.ports[0]) e.ports[0].postMessage({ token: TOKEN }); });
+    navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.type === 'token?' && e.ports && e.ports[0]) e.ports[0].postMessage({ token: TOKEN, key: CLIENT ? CK : null }); });
     try {
       var reg = await navigator.serviceWorker.register(CFG.base + 'sw.js', { scope: CFG.base });
       if (navigator.serviceWorker.controller) return true;
@@ -369,6 +489,7 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
     });
   }
   async function boot() {
+    if (CLIENT) { bootClientMode(); return; }
     if (!location.hash || location.hash === '#' || location.hash === '#top') { try { history.replaceState(null, '', location.pathname + location.search + '#intranet'); } catch (e) {} }
     try { if (!window.supabase) await loadScript(CFG.lib); } catch (e) { fatal('필요한 프로그램을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로 고쳐 주세요.'); return; }
     sb = window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'centum-sbx-auth' } });
@@ -387,7 +508,7 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
     var tries = 0, t = setInterval(function () { acctUi(); if (document.getElementById('sbxAcct') || ++tries > 60) clearInterval(t); }, 500);
   }
   function fatal(t) { showGate('in'); gateMsg(t, true); gate.querySelector('#sbxGo').disabled = true; }
-  window.__sbx = { get client() { return sb; }, get uid() { return UID; }, get owner() { return OWNER; }, resync: resyncAll };
+  window.__sbx = { get client() { return sb; }, get uid() { return UID; }, get owner() { return OWNER; }, get mode() { return CLIENT ? 'client' : 'staff'; }, get key() { return CK; }, resync: resyncAll };
   boot();
 })();
 </script><title>센텀 법무사 사무소</title>
@@ -4697,6 +4818,58 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .fx__undo{font-size:12px}
 .fx__r.is-done{border-color:#bfe0cb;box-shadow:inset 4px 0 0 var(--ok)}
 .fx__r.is-done .fx__st{font-size:12.5px}
+/* ── v198 의뢰인 진행 조회: 휴대폰 친화 ── */
+.ccnav{display:none}
+.ccup{display:grid;grid-template-columns:1fr;gap:8px}
+.ccup__b{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border:1.5px dashed #cfc3b7;background:#fcfaf8;font:inherit;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;padding:0 14px}
+.ccup__b:hover{border-color:var(--apricot-deep);background:var(--apricot-soft)}
+.ccup__b:focus-visible{outline:2px solid var(--apricot-deep);outline-offset:2px}
+.ccup__b--cam{display:none}
+.ccup__pt{display:none}
+.ccup2{display:inline-flex;gap:6px;flex-wrap:wrap}
+.ccup2__cam{display:none}
+.cck__cam{display:none}
+@media (hover:none) and (pointer:coarse){
+  .ccup{grid-template-columns:1fr 1fr}
+  .ccup__b--cam{display:flex;border-style:solid;border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+  .ccup__b--cam:hover{background:var(--ink);border-color:var(--ink)}
+  .ccup__pt{display:inline}.ccup__pd{display:none}
+  .ccup2__cam{display:inline-flex}.cck__cam{display:inline-flex}
+}
+@media (max-width:720px){
+  #client .intra__top{position:sticky;top:0;z-index:30}
+  .mycase{padding-top:14px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .mycase__hd{align-items:center;margin-bottom:12px;gap:8px}
+  .mycase__hd .eyebrow{display:none}
+  .mycase__hd h1{font-size:20px;line-height:1.35}
+  .mycase__hd #ccOut{min-height:40px;font-size:13px}
+  .mycase__card{padding:18px 16px}
+  .mycase__card+.mycase__card{margin-top:12px}
+  #cCase[data-pane="s"] [data-ccp]:not([data-ccp="s"]),#cCase[data-pane="d"] [data-ccp]:not([data-ccp="d"]),#cCase[data-pane="c"] [data-ccp]:not([data-ccp="c"]){display:none!important}
+  .ccnav{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper);border-top:1px solid var(--line);padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px -22px rgba(21,18,15,.5)}
+  .ccnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .ccnav svg{width:24px;height:24px}
+  .ccnav button[aria-pressed="true"]{color:var(--apricot-deep)}
+  .ccnav button[aria-pressed="true"]::before{content:"";position:absolute;top:0;left:24%;right:24%;height:3px;background:var(--apricot-deep)}
+  .ccnav__n{position:absolute;top:6px;left:calc(50% + 6px);min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--danger);color:#fff;font-style:normal;font-size:11px;font-weight:700;line-height:19px;text-align:center}
+  /* 대화 탭: 메시지 칸이 화면을 채우고 입력 칸은 아래 탭 막대 바로 위 */
+  #cCase[data-pane="c"] #ccChatCard{display:flex;flex-direction:column;padding-bottom:12px}
+  #cCase[data-pane="c"] #ccChatCard>.sub{font-size:13px;margin-bottom:0}
+  #cCase[data-pane="c"] .msgs--sm{height:calc(100dvh - 330px - env(safe-area-inset-bottom,0px));min-height:240px}
+  #ccCompose{position:sticky;bottom:calc(68px + env(safe-area-inset-bottom,0px));background:var(--paper);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;padding-top:10px}
+  #ccCompose textarea{min-height:48px;max-height:140px;font-size:16px;resize:none}
+  #ccCompose .btn{min-height:48px;padding:0 18px}
+  /* 누르기 쉬운 크기 · 확대되지 않는 글자(16px) */
+  #client .inp{font-size:16px}
+  #loginForm .btn,#cLogin .btn{min-height:50px;width:100%}
+  .ccb__row,.ccb__more{min-height:48px}
+  .ccb__x,.ccb__dl{min-height:40px;display:inline-flex;align-items:center}
+  .ccup__b{min-height:58px;font-size:15.5px}
+  #ccDrop p{font-size:13.5px}
+  .ccup2{width:100%}.ccup2 .btn{flex:1 1 0;min-height:48px}
+  .cck__top .btn{min-height:44px}
+  .mycase .flist .btn{min-height:40px}
+}
 </style>
 <script>
 (function(){try{if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim')}catch(e){}})();
@@ -5207,13 +5380,13 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
         <div style="margin-right:auto"><span class="latin eyebrow">My Case</span><h1 class="h2" id="ccName"></h1></div>
         <button class="btn btn--sm btn--line" type="button" id="ccOut">다른 사건 조회</button>
       </div>
-      <div class="mycase__card" id="ccStatus"></div>
-      <div class="mycase__card" id="ccCkCard" hidden>
+      <div class="mycase__card" id="ccStatus" data-ccp="s"></div>
+      <div class="mycase__card" id="ccCkCard" data-ccp="d" hidden>
         <h3>보내 주실 서류 <span class="pill" id="ccCkN"></span></h3>
         <p class="sub" id="ccCkSub">사무소가 요청한 서류입니다. 서류마다 「사진 찍기 · 파일 올리기」로 보내 주세요. 사무소가 다 받으면 「받았습니다」로 바뀝니다.</p>
         <div id="ccCk"></div>
       </div>
-      <div class="mycase__card">
+      <div class="mycase__card" data-ccp="d" id="ccFileCard">
         <h3>서류 주고받기</h3>
         <p class="sub">사무소에서 보낸 서류를 내려받고, 사건에 필요한 서류를 보내실 수 있습니다.</p>
         <h4>주고받은 서류 (최근 것부터) <span class="pill pill--new" id="ccNewN" hidden></span></h4>
@@ -5221,20 +5394,26 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
         <div class="drop" id="ccDrop">
           <p id="ccDropText">파일을 여기로 끌어다 놓거나 오른쪽 버튼으로 선택하세요. PDF와 사진(JPG, PNG)을 20MB까지 보낼 수 있습니다.</p>
           <input type="file" id="ccFile" multiple hidden>
-          <button class="btn btn--sm" type="button" id="ccPick">파일 선택</button>
+          <input type="file" id="ccCam" accept="image/*" capture="environment" hidden>
+          <span class="ccup2"><button class="btn btn--sm ccup2__cam" type="button" id="ccCamBtn">사진 찍기</button><button class="btn btn--sm" type="button" id="ccPick">파일 선택</button></span>
         </div>
         <div class="note" id="ccFileNote" role="status" hidden></div>
       </div>
-      <div class="mycase__card">
+      <div class="mycase__card" data-ccp="c" id="ccChatCard">
         <h3>담당자와 대화</h3>
         <p class="sub">남기신 메시지는 사무소 담당자가 확인하고 답변드립니다. 급한 일은 전화(<a class="tel" href="tel:0510000000">051-000-0000</a>)로 연락해 주세요.</p>
         <div class="msgs msgs--sm" id="ccMsgs" aria-live="polite"></div>
         <form class="compose" id="ccCompose">
-          <textarea class="inp" id="ccText" maxlength="1000" placeholder="메시지 입력 (Enter 전송, Shift+Enter 줄바꿈)" aria-label="메시지"></textarea>
+          <textarea class="inp" id="ccText" maxlength="1000" placeholder="메시지 입력" aria-label="메시지"></textarea>
           <button class="btn" type="submit">보내기</button>
         </form>
         <div class="note" id="ccChatNote" role="status" hidden></div>
       </div>
+      <nav class="ccnav" id="ccNav" aria-label="진행 조회 화면 나누기">
+        <button type="button" data-ccnav="s" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9m7 10V5m7 14v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>진행 상황</span></button>
+        <button type="button" data-ccnav="d" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7zM14 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>서류</span><em class="ccnav__n" id="ccNavD" hidden></em></button>
+        <button type="button" data-ccnav="c" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>대화</span><em class="ccnav__n" id="ccNavC" hidden></em></button>
+      </nav>
     </section>
   </div>
 </div>
@@ -9027,6 +9206,7 @@ async function sendFiles(key,files,from,noteEl,caseId,extra){
     if(!type){bad.push(f.name+' (지원하지 않는 형식)');continue}
     if(f.size>20*1048576){bad.push(f.name+' (20MB 초과)');continue}
     note(noteEl,'','보내는 중… '+(i+1)+'/'+files.length+' · '+f.name);
+    if(from==='client'){var f2=await ccShrink(f);if(f2!==f){f=f2;type=f.type}}
     try{var r=await C.assets.upload(f,{type:type});
       await tref(key).collection('files').add(Object.assign({name:f.name,asset:r.id,size:r.sizeBytes,type:r.contentType,from:from,uid:from==='staff'&&C.me?C.me.id:null,at:Date.now()},extra||{}));ok++}
     catch(e){bad.push(f.name+(e&&e.code==='quota_or_state'?' (저장 공간 부족)':e&&e.code==='too_large'?' (용량 초과)':' (보내기 실패)'))}}
@@ -9635,18 +9815,20 @@ function trackCk(c){if(!is16(c)||typeof c.st4==='number')return [];var out=[];fo
 /* 의뢰인 진행 화면: 공유된 항목마다 서류 올리기 */
 function drawClientCk(){var card=$('#ccCkCard'),box=$('#ccCk');if(!card||!box)return;var t=K.trk||{},list=(Array.isArray(t.ck16)?t.ck16:[]).filter(function(x){return x&&typeof x.t==='string'&&typeof x.n==='number'&&typeof x.id==='string'});
   var bl4=(Array.isArray(t.bx4)?t.bx4:[]).filter(function(b){return b&&typeof b.id==='string'&&typeof b.name==='string'});
-  card.hidden=!list.length&&!bl4.length;box.textContent='';if(!list.length&&!bl4.length)return;var canUp=!!(C&&C.assets),last=null,grp=null,left=list.filter(function(x){return !x.done}).length+bl4.filter(function(b){return b.st==='req'}).length;if(bl4.length)ccBx4(box,bl4,canUp);
-  var cn=$('#ccCkN'),sb=$('#ccCkSub');if(!list.length){var lt4=bl4.filter(function(b){return b.st==='req'&&b.due&&b.due<today()}).length;cn.textContent=left?left+'건':'모두 받았습니다';cn.className='pill'+(lt4?' pill--bad':left?' pill--new':' pill--done');if(sb)sb.textContent='사무소가 요청한 서류입니다. 서류마다 「사진 찍기 · 파일 올리기」로 보내 주세요. 사무소가 다 받으면 「받았습니다」로 바뀝니다.'}
+  card.hidden=!list.length&&!bl4.length;box.textContent='';if(!list.length&&!bl4.length){K.ckLeft=0;K.ckNeed=0;ccNavDraw();return}var canUp=!!(C&&C.assets),last=null,grp=null,left=list.filter(function(x){return !x.done}).length+bl4.filter(function(b){return b.st==='req'}).length;if(bl4.length)ccBx4(box,bl4,canUp);
+  K.ckLeft=left;var fsC=(K.files||[]).filter(function(f){return f.from==='client'});K.ckNeed=bl4.filter(function(b){return b.st==='req'&&!fsC.some(function(f){return f.bx===b.id&&(f.at||0)>(b.at||0)})}).length+list.filter(function(x){return !x.done&&!fsC.some(function(f){return f.ck===x.n+':'+x.id})}).length;ccNavDraw();var cn=$('#ccCkN'),sb=$('#ccCkSub');if(!list.length){var lt4=bl4.filter(function(b){return b.st==='req'&&b.due&&b.due<today()}).length;cn.textContent=left?left+'건':'모두 받았습니다';cn.className='pill'+(lt4?' pill--bad':left?' pill--new':' pill--done');if(sb)sb.textContent='사무소가 요청한 서류입니다. 서류마다 「사진 찍기 · 파일 올리기」로 보내 주세요. 사무소가 다 받으면 「받았습니다」로 바뀝니다.'}
   else{cn.textContent=left?'남은 항목 '+left+'개':'모두 확인되었습니다';cn.className='pill'+(left?' pill--new':' pill--done');if(sb)sb.textContent='사무소가 요청한 서류입니다. 항목마다 「서류 올리기」로 바로 보내 주세요(항목당 3개까지). 담당자가 확인하면 「확인 완료」로 바뀝니다.'}
   list.forEach(function(x){if(x.n!==last){last=x.n;grp=h('ul',{class:'cck__l'});box.appendChild(h('section',{class:'cck__g'},h('h4',{text:x.step||stepName(x.n)}),grp))}
     var key=x.n+':'+x.id,mine=(K.files||[]).filter(function(f){return f.from==='client'&&f.ck===key}).sort(function(a,b){return (a.at||0)-(b.at||0)}),room=Math.max(0,CK_MAX-(x.sf|0)-mine.length),nt=(K.ckNt=K.ckNt||{})[key]||(K.ckNt[key]=h('div',{class:'note',role:'status',hidden:true}));
     var st=x.done?['확인 완료','pill--done']:mine.length?['보냄 · 사무소 확인 중','pill--new']:['보내 주세요',''];
-    var fin=h('input',{type:'file',multiple:true,hidden:true});fin.addEventListener('change',function(){var a=[].slice.call(fin.files||[]);fin.value='';if(!a.length)return;
+    var fin=h('input',{type:'file',multiple:true,hidden:true}),fcam=h('input',{type:'file',accept:'image/*',capture:'environment',hidden:true});fcam.addEventListener('change',function(){var a=[].slice.call(fcam.files||[]);fcam.value='';if(a.length&&room>0)sendFiles(K.key,a.slice(0,1),'client',nt,K.caseId,{ck:key,ckT:x.t.slice(0,60)})});
+    fin.addEventListener('change',function(){var a=[].slice.call(fin.files||[]);fin.value='';if(!a.length)return;
       var over=a.length-room;sendFiles(K.key,a.slice(0,room),'client',nt,K.caseId,{ck:key,ckT:x.t.slice(0,60)}).then(function(){if(over>0)note(nt,'bad','이 항목에는 '+room+'개만 더 올릴 수 있어 '+room+'개만 보냈습니다. 나머지 '+over+'개는 보내지 않았습니다.')})});
     var fu=null;if(mine.length){fu=h('ul',{class:'cck__files'});mine.forEach(function(f){fu.appendChild(h('li',null,h('a',{href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',text:f.name||'파일'}),h('span',{class:'sub',style:'margin:0;font-size:12px',text:fmtDate(f.at||0)+' '+fmtTime(f.at||0)}),
       !x.done&&canUp?h('button',{class:'btn btn--sm btn--del',type:'button','aria-label':'보낸 파일 삭제: '+(f.name||''),text:'삭제',onclick:function(){dropTrackFile(K.key,f,nt)}}):null))})}
     grp.appendChild(h('li',{class:'cck'+(x.done?' is-done':''),'data-ck':key},h('div',{class:'cck__top'},h('b',{text:x.t}),h('span',{class:'pill '+st[1],text:st[0]}),
-        !x.done&&canUp&&room>0?h('button',{class:'btn btn--sm',type:'button','data-ckup':key,text:'서류 올리기',onclick:function(){fin.click()}}):null,fin),
+        !x.done&&canUp&&room>0?h('button',{class:'btn btn--sm',type:'button','data-ckup':key,text:'서류 올리기',onclick:function(){fin.click()}}):null,fin,
+        !x.done&&canUp&&room>0?h('button',{class:'btn btn--sm btn--line cck__cam',type:'button','data-ckcam':key,text:'사진 찍기',onclick:function(){fcam.click()}}):null,fcam),
       fu,!x.done&&room<=0?h('p',{class:'sub',style:'margin:4px 0 0;font-size:12.5px',text:'이 항목은 파일을 '+CK_MAX+'개까지 올릴 수 있습니다. 바꾸시려면 보낸 파일을 삭제한 뒤 다시 올려 주세요.'}):null,nt))})}
 
 var F6=[['unsecured','무담보 원금'],['secured','담보채무'],['priorityDebt','우선권 채권 등'],['realestate','부동산 순가치'],['deposit','임차보증금 순가치'],['cash','예금·현금'],['insurance','보험 해약환급금'],['car','차량 순가치'],['retirement','퇴직금 반영액'],['otherAsset','기타재산'],['monthlyIncome','월 평균 실수령 소득']];
@@ -12879,9 +13061,8 @@ function ccBoxCard(b,ex,canUp,many){var fs=K.files||[],mine=fs.filter(function(f
   if(mine.length){var ml=h('div',{class:'ccb__f'});mine.forEach(function(f){ml.appendChild(h('div',{class:'ccb__row'},h('a',{class:'ccb__n',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',text:f.name||'파일'}),h('span',{class:'ccb__at',text:fmtDate(f.at||0).slice(5)}),
       canUp?h('button',{class:'ccb__x',type:'button','aria-label':'보낸 파일 지우기: '+(f.name||''),text:'지우기',onclick:function(){dropTrackFile(K.key,f,nt)}}):null))});
     card.appendChild(h('div',null,h('div',{class:'ccb__lab',text:'내가 보낸 파일 '+mine.length}),ml))}
-  if(canUp){var fin=h('input',{type:'file',multiple:true,hidden:true,accept:'image/*,.pdf,.txt,.csv'});fin.addEventListener('change',function(){var a=[].slice.call(fin.files||[]);fin.value='';if(a.length)sendFiles(K.key,a,'client',nt,K.caseId,{bx:b.id,bxT:String(b.name).slice(0,60)})});
-    card.appendChild(h('button',{class:'ccb__up',type:'button','data-ccbxup':b.id,onclick:function(){fin.click()}},ccUpIco(),'사진 찍기 · 파일 올리기'));card.appendChild(fin);
-    card.appendChild(h('span',{class:'ccb__hint',text:'여러 장을 한꺼번에 올릴 수 있습니다. 사무소가 다 받으면 「받았습니다」로 바뀝니다.'}))}
+  if(canUp){card.appendChild(ccUpBtns(function(a){sendFiles(K.key,a,'client',nt,K.caseId,{bx:b.id,bxT:String(b.name).slice(0,60)})},{id:b.id,label:'사진 찍기 · 파일 올리기'}));
+    card.appendChild(h('span',{class:'ccb__hint',text:'서류 한 장마다 「사진 찍기」로 찍어 보내셔도 됩니다. 앨범에 있는 사진이나 PDF는 여러 개를 한꺼번에 고를 수 있습니다.'}))}
   else card.appendChild(h('span',{class:'ccb__hint',text:'지금은 이 화면에서 파일을 올릴 수 없습니다. 담당자에게 문의해 주세요.'}));
   card.appendChild(nt);
   if(many)card.appendChild(h('button',{class:'ccb__fold',type:'button',onclick:function(){K.bxOpen[b.id]=false;drawClientCk()}},'접기'));
@@ -14747,10 +14928,33 @@ function bkSplitEditor(x,s){var wrap=h('div',{class:'bk__split',id:'bkSplit'}),L
   if(!all.length)wrap.appendChild(h('p',{class:'sub',text:'고칠 수 있는 업무가 없습니다.'}));sum();return wrap}
 document.addEventListener('focusout',function(e){var b=$('#bkBox');if(BK.later&&b&&b.contains(e.target))setTimeout(function(){var ae=document.activeElement;if(!(ae&&b.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)))renderBank()},0)});
 
-function drawClientFiles(){newPill($('#ccNewN'),fileSplit($('#ccFiles'),K.files,{key:K.key,noteEl:$('#ccFileNote'),viewer:'client',redraw:drawClientFiles,ready:K.ready.files}));drawClientCk()}
-function drawClientChat(force){var f=force||K.stick;K.stick=false;drawChat($('#ccMsgs'),K.msgs,'client',{ready:K.ready.msgs,force:f,divAt:K.divAt,jump:K.jump,peerAt:K.read.s})}
+/* v198: 휴대폰(720px 이하)에서는 진행 상황 · 서류 · 대화를 아래 탭 막대로 나눠 한 번에 하나씩 */
+var CC_MQ=window.matchMedia?window.matchMedia('(max-width:720px)'):{matches:false,addEventListener:function(){}};
+function ccMob(){return !!CC_MQ.matches}
+function ccPane(p,scroll){if(!/^[sdc]$/.test(p))p='s';K.pane=p;try{sessionStorage.setItem('centum.ccp',p)}catch(e){}var cs=$('#cCase');if(cs)cs.setAttribute('data-pane',p);
+  $$('#ccNav [data-ccnav]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-ccnav')===p?'true':'false')});
+  if(ccMob()&&scroll!==false)window.scrollTo(0,0);if(p==='c'){drawClientChat(true);seenTrack()}ccNavDraw()}
+function ccNavDraw(){var d=$('#ccNavD'),c=$('#ccNavC');if(!d||!c)return;var nd=(K.ckNeed|0)+(K.fNew|0),seen=Math.max(K.read&&K.read.c||0,K.key?readMap[trkId(K.key)]||0:0),
+  nc=(K.msgs||[]).filter(function(m){return m.from!=='client'&&typeof m.at==='number'&&m.at>seen}).length;if(ccMob()&&K.pane==='c')nc=0;
+  d.hidden=!nd;d.textContent=nd>99?'99+':String(nd||'');c.hidden=!nc;c.textContent=nc>99?'99+':String(nc||'')}
+$$('#ccNav [data-ccnav]').forEach(function(b){b.addEventListener('click',function(){ccPane(b.getAttribute('data-ccnav'))})});
+if(CC_MQ.addEventListener)CC_MQ.addEventListener('change',function(){ccNavDraw();seenTrack()});
+/* 사진 찍기(휴대폰 카메라 바로) + 파일·앨범에서 고르기 두 단추. 터치 화면이 아니면 「파일 올리기」 하나만 보인다 */
+function ccUpBtns(fn,o){o=o||{};var cam=h('input',{type:'file',accept:'image/*',capture:'environment',hidden:true}),pick=h('input',{type:'file',multiple:true,hidden:true,accept:o.accept||'image/*,.pdf,.txt,.csv'});
+  [cam,pick].forEach(function(i){i.addEventListener('change',function(){var a=[].slice.call(i.files||[]);i.value='';if(a.length)fn(a)})});
+  return h('div',{class:'ccup'+(o.sm?' ccup--sm':'')},h('button',{class:'ccup__b ccup__b--cam',type:'button','data-ccam':o.id||'',onclick:function(){cam.click()}},ccCamIco(),h('span',{text:'사진 찍기'})),
+    h('button',{class:'ccup__b ccup__b--pick',type:'button','data-cpick':o.id||'',onclick:function(){pick.click()}},ccUpIco(),h('span',{class:'ccup__pt',text:'앨범·파일'}),h('span',{class:'ccup__pd',text:o.label||'파일 올리기'})),cam,pick)}
+function ccCamIco(){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('width','20');s.setAttribute('height','20');s.setAttribute('aria-hidden','true');
+  s.innerHTML='<path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>';return s}
+/* 휴대폰 사진은 크다: 2.5MB가 넘는 JPG·PNG는 긴 쪽 2400px JPG로 줄여 보낸다(글씨는 그대로 읽힘). 줄이지 못하면 원래 파일 */
+async function ccShrink(f){try{if(!/^image\/(jpeg|png|webp)$/.test(f.type||'')||f.size<=2.5*1048576||!window.createImageBitmap)return f;
+  var bm=await createImageBitmap(f,{imageOrientation:'from-image'}),k=Math.min(1,2400/Math.max(bm.width,bm.height)),w=Math.round(bm.width*k),hh=Math.round(bm.height*k),cv=document.createElement('canvas');cv.width=w;cv.height=hh;
+  cv.getContext('2d').drawImage(bm,0,0,w,hh);if(bm.close)bm.close();var bl=await new Promise(function(r){cv.toBlob(r,'image/jpeg',.86)});if(!bl||bl.size>=f.size)return f;
+  return new File([bl],String(f.name||'사진').replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg',lastModified:Date.now()})}catch(e){return f}}
+function drawClientFiles(){K.fNew=fileSplit($('#ccFiles'),K.files,{key:K.key,noteEl:$('#ccFileNote'),viewer:'client',redraw:drawClientFiles,ready:K.ready.files});newPill($('#ccNewN'),K.fNew);drawClientCk()}
+function drawClientChat(force){var f=force||K.stick;K.stick=false;drawChat($('#ccMsgs'),K.msgs,'client',{ready:K.ready.msgs,force:f,divAt:K.divAt,jump:K.jump,peerAt:K.read.s});ccNavDraw()}
 /* 진행 조회 화면을 보고 있으면 의뢰인이 읽은 것으로 적는다(사무소 화면에 「의뢰인 읽음」으로 보인다) */
-function seenTrack(){if(!K.key||!K.ready.msgs||$('#client').hidden||$('#cCase').hidden||document.hidden)return;var at=lastAt(K.msgs);if(!at)return;
+function seenTrack(){if(!K.key||!K.ready.msgs||$('#client').hidden||$('#cCase').hidden||document.hidden||(ccMob()&&K.pane!=='c'))return;var at=lastAt(K.msgs);if(!at)return;
   markRead(trkId(K.key),at);pubRead('trk:'+K.key,infoRead(K.key),at,K.read.c,'c',true)}
 /* 의뢰인 기기에 남기는 읽음 위치의 이름: 조회용 키 전체를 저장소에 남기지 않도록 앞부분만 쓴다(이것만으로는 조회할 수 없다) */
 function trkId(key){return 'trk:'+String(key).slice(0,12)}
@@ -14761,8 +14965,8 @@ async function watchTrack(key,fromLogin){
   if(!sn.exists){if(fromLogin==='link')logout('링크가 올바르지 않거나 더 이상 쓸 수 없습니다. 이름과 접수번호로 조회하거나 사무소에 문의해 주세요.');else if(fromLogin)logout('이름 또는 접수번호가 맞지 않습니다. 다시 확인해 주세요.');else sess(null);return false}
   K.key=key;K.divAt=readMap[trkId(key)]||0;K.jump={on:true};sess(key);$('#lgNote').hidden=true;$('#cLogin').hidden=true;$('#cCase').hidden=false;
   $('#ccText').value='';$('#ccFileNote').hidden=true;$('#ccChatNote').hidden=true;
-  renderTrack(sn.data());drawClientFiles();drawClientChat(true);
-  var canUp=!!(C&&C.assets);$('#ccPick').hidden=!canUp;
+  var p0='s';try{p0=sessionStorage.getItem('centum.ccp')||'s'}catch(e){}ccPane(p0,false);renderTrack(sn.data());drawClientFiles();drawClientChat(true);
+  var canUp=!!(C&&C.assets);$('#ccPick').hidden=!canUp;$('#ccCamBtn').hidden=!canUp;
   $('#ccDropText').textContent=canUp?'파일을 여기로 끌어다 놓거나 오른쪽 버튼으로 선택하세요. PDF와 사진(JPG, PNG)을 20MB까지 보낼 수 있습니다.':'지금은 이 화면에서 파일을 보낼 수 없습니다. 서류는 담당자에게 직접 전달해 주세요.';
   K.unsubs.push(ref.onSnapshot(function(s2){if(s2.exists){renderTrack(s2.data());drawClientCk()}else if(!(s2.metadata&&s2.metadata.fromCache))logout('조회 정보가 변경되었습니다. 사무소에 문의해 주세요.')},function(){}));
   K.unsubs.push(tref(key).collection('chat').orderBy('at','desc').limit(200).onSnapshot(function(s){K.msgs=rows(s).reverse();K.ready.msgs=1;seenTrack();drawClientChat()},function(){}));
@@ -14787,6 +14991,7 @@ $('#loginForm').addEventListener('submit',async function(e){e.preventDefault();v
 
 $('#ccOut').addEventListener('click',function(){logout()});
 bindDrop($('#ccDrop'),$('#ccFile'),$('#ccPick'),function(files){sendFiles(K.key,files,'client',$('#ccFileNote'),K.caseId)});
+$('#ccCamBtn').addEventListener('click',function(){$('#ccCam').click()});$('#ccCam').addEventListener('change',function(){var i=$('#ccCam'),a=[].slice.call(i.files||[]);i.value='';if(a.length)sendFiles(K.key,a,'client',$('#ccFileNote'),K.caseId)});
 bindCompose($('#ccCompose'),$('#ccText'),function(){sendChat(K,'client',$('#ccText'),$('#ccChatNote'))});
 document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;if(!$('#hrDlg').hidden)closeHr();else if(!$('#pendDlg').hidden){if(!PD.call.recording())closePend()}else if(!$('#roomDlg').hidden)closeRoomDlg();else if(!$('#caseDlg').hidden){var ae=document.activeElement;if(CR.pane&&ae&&ae.closest&&ae.closest('#crPane')){if(e.defaultPrevented)return;if(CR.find.on){crFindClose();return}crPaneClose();return}if(!D.call.recording())closeCase()}});
 /* 가려져 있던 화면으로 돌아오면: 그 사이 온 메시지 앞에 「여기까지 읽었습니다」 줄을 두고 읽음으로 적는다 */
