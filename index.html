@@ -4972,6 +4972,26 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
   #cCase[data-pane="c"] .msg{max-width:90%}
   .cfm--img{max-width:210px}
 }
+/* ── v201: 의뢰인 대화 말풍선 색 구분 · 서류 탭 문의 안내 ── */
+#ccChatCard .msg:not(.mine) .msg__tx{background:#fff;border:1px solid #e3d9cf;box-shadow:0 1px 2px rgba(21,18,15,.06)}
+#ccChatCard .msg.mine .msg__tx{background:#e9a97c;color:#1c120b;border:1px solid #dc9767}
+#ccChatCard .msg.mine .msg__tx a{color:#1c120b}
+#ccChatCard .msg:not(.mine) .cfm:not(.cfm--img){background:#fff;border-color:#e3d9cf;box-shadow:0 1px 2px rgba(21,18,15,.06)}
+#ccChatCard .msg.mine .cfm:not(.cfm--img){background:#fbe3d2;border-color:#e9a97c}
+#ccChatCard .msgs .day{background:#fff;border:1px solid #ece4dc}
+.ccask{margin-top:12px;padding:14px 16px;background:#fff;border:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.ccask p{margin:0;flex:1 1 220px;font-size:15.5px;font-weight:700;line-height:1.5;color:var(--ink)}
+.ccask__b{display:flex;gap:8px;flex:1 1 auto;justify-content:flex-end}
+.ccask__tel,.ccask__chat{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:0 16px;font:inherit;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer;border-radius:999px}
+.ccask__tel{background:var(--ink);color:var(--on-ink);border:1px solid var(--ink)}
+.ccask__chat{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.ccask__tel:hover{background:#2a2420}.ccask__chat:hover{border-color:var(--apricot-deep);color:var(--apricot-deep)}
+.ccask svg{width:19px;height:19px}
+@media (max-width:720px){.ccask{margin-top:0}.ccask__b{width:100%}.ccask__tel,.ccask__chat{flex:1 1 0}}
+/* v202: 「새 파일」 꼬리표는 파일 이름과 띄움 */
+tr[data-fk] .pill--new{margin-left:14px}
+.s4-fr__l1 .s4-tag--new{margin-left:8px}
+.frow__top .pill--new{margin-left:10px}
 </style>
 <script>
 (function(){try{if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim')}catch(e){}})();
@@ -5483,6 +5503,7 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
         <button class="btn btn--sm btn--line" type="button" id="ccOut">다른 사건 조회</button>
       </div>
       <div class="mycase__card" id="ccStatus" data-ccp="s"></div>
+      <div class="ccask" data-ccp="d" id="ccAsk"><p>문의사항이 있으면 전화나 대화창을 이용해 주세요</p><div class="ccask__b"><a class="ccask__tel" href="tel:0510000000" aria-label="사무소에 전화하기 051-000-0000"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5l2.6 3.4-1.6 2.3a12 12 0 0 0 7.2 7.2l2.3-1.6 3.4 2.6-1.3 3.1C11.4 20.8 3.2 12.6 3.5 4.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>전화하기</a><button class="ccask__chat" type="button" id="ccAskChat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>대화창 열기</button></div></div>
       <div class="mycase__card" id="ccCkCard" data-ccp="d" hidden>
         <h3>보내 주실 서류 <span class="pill" id="ccCkN"></span></h3>
         <p class="sub" id="ccCkSub" hidden></p>
@@ -12539,6 +12560,15 @@ function s4BFiles(c,b){var out=[],fm=obj(b.files);
   s4TFiles().forEach(function(f){if(s4BoxOf(c,f)===b.id)out.push(Object.assign({},f,{src:'trk',dir:f.from==='client'?'in':'out',who:f.from==='client'?'client':(f.uid||'')}))});
   return out.sort(function(a,b){return (b.at||0)-(a.at||0)})}
 function s4IsNew(f){return f.src==='trk'&&f.from==='client'&&Date.now()-(f.at||0)<NEW_MS&&!fileGot(f,'staff')}
+/* v202: 파일 박스(상세)를 한 번 보면 그 박스의 새 파일은 본 것으로 — 보고 있는 동안만 꼬리표를 남김 */
+function s4SeeNew(c,b,fs,el){var K2=D.s4keep=D.s4keep||{};Object.keys(K2).forEach(function(k){if(K2[k]!==b.id)delete K2[k]});
+  var nf=fs.filter(s4IsNew);if(!D.key||!nf.length)return;var key=D.key;
+  /* 화면에 실제로 보일 때만(숨은 탭에 그려진 것은 세지 않음) */
+  setTimeout(function(){if(!el.isConnected||!el.offsetWidth||document.hidden||D.key!==key)return;nf.forEach(function(f){if(s4IsNew(f)){K2[f.id]=b.id;markGot({viewer:'staff',key:key},f)}})},700)}
+
+/* v203: 의뢰인이 올린 새 파일은 미리보기(열기)나 내려받기를 하면 본 것으로(dlS) */
+function s4Seen(f){if(f&&f.src==='trk'&&s4IsNew(f)&&D.key)markGot({viewer:'staff',key:D.key},f)}
+function s4NewHere(f,b){return s4IsNew(f)||!!(b&&D.s4keep&&D.s4keep[f.id]===b.id)}
 function s4State(c,b,fs){if(b.st==='closed')return 'closed';if(b.st!=='req')return 'none';fs=fs||s4BFiles(c,b);var at=b.req&&b.req.at||0;
   return fs.some(function(f){return f.src==='trk'&&f.dir==='in'&&(f.at||0)>at})?'sent':'req'}
 function s4Late(b){return b.st==='req'&&!!b.req&&/^\d{4}-\d{2}-\d{2}$/.test(b.req.due||'')&&b.req.due<today()}
@@ -12741,11 +12771,11 @@ function s4BoxAdd(c,p){var nm=h('input',{type:'text',maxlength:'40',placeholder:
 var S4_HINT={in:'방문·이메일·카카오톡으로 받은 서류를 직원이 대신 올립니다. 「받은 파일」에 올린 사람 이름으로 남습니다.',out:'의뢰인 진행 화면에 바로 보입니다(양식·안내문 등). 접수번호가 있어야 보낼 수 있습니다.',own:'사무소 안에서만 보입니다(작업 파일·초안 등).'};
 /* ── v189 파일 줄: 낮고 넓게(한 줄 이름 + 꼬리표 · 누가·언제·크기), 많으면 8개 + 더 보기, 마우스를 올리면 살짝 떠오름 ── */
 var S4_FMAX=8;
-function s4FList(c,b,ok,list,title,empty,dir){var ul=h('ul',{class:'s4-fl','data-dir':dir}),nw=list.filter(s4IsNew).length,fk=b.id+':'+dir,all=(D.s4fall=D.s4fall||{})[fk],shown=all||list.length<=S4_FMAX+1?list:list.slice(0,S4_FMAX);
-  shown.forEach(function(f){var a=h('a',{class:'s4-fl__n',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',title:f.name||'',text:f.name||'파일',onclick:function(){if(s4IsNew(f)&&D.key)setTimeout(function(){markGot({viewer:'staff',key:D.key},f)},0)}});pvAttrs(a,f,f.who==='client'?'client':f.who,f.at);
+function s4FList(c,b,ok,list,title,empty,dir){var ul=h('ul',{class:'s4-fl','data-dir':dir}),nw=list.filter(function(f){return s4NewHere(f,b)}).length,fk=b.id+':'+dir,all=(D.s4fall=D.s4fall||{})[fk],shown=all||list.length<=S4_FMAX+1?list:list.slice(0,S4_FMAX);
+  shown.forEach(function(f){var a=h('a',{class:'s4-fl__n',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',title:f.name||'',text:f.name||'파일',onclick:function(){setTimeout(function(){s4Seen(f)},0)},onpvopen:function(){setTimeout(function(){s4Seen(f)},0)}});pvAttrs(a,f,f.who==='client'?'client':f.who,f.at);
     var who=f.who==='client'?'의뢰인':f.who&&S.staff[f.who]?nameOf(f.who):'사무소',tag=f.dir==='own'?['own','사무소 안']:f.dir==='out'?['out','의뢰인에게 줌']:f.src==='int'?['by','대신 받음']:null;
-    ul.appendChild(h('li',{class:'s4-fr'+(s4IsNew(f)?' is-new':''),'data-fdir':f.dir},s4FIcon(f),
-      h('div',{class:'s4-fl__m'},h('span',{class:'s4-fr__l1'},a,s4IsNew(f)?h('span',{class:'s4-tag s4-tag--new',text:'새 파일'}):null,tag?h('span',{class:'s4-tag s4-tag--'+tag[0],text:tag[1]}):null),
+    ul.appendChild(h('li',{class:'s4-fr'+(s4NewHere(f,b)?' is-new':''),'data-fdir':f.dir},s4FIcon(f),
+      h('div',{class:'s4-fl__m'},h('span',{class:'s4-fr__l1'},a,s4NewHere(f,b)?h('span',{class:'s4-tag s4-tag--new',text:'새 파일'}):null,tag?h('span',{class:'s4-tag s4-tag--'+tag[0],text:tag[1]}):null),
         h('span',{class:'s4-fr__meta',text:[who,f.at?fmtDate(f.at).slice(5).replace('-','.')+' '+fmtTime(f.at):'',+f.size?fmtSize(+f.size):''].filter(Boolean).join(' · ')})),
       h('div',{class:'s4-fl__a'},C&&C.downloads?h('button',{class:'btn btn--sm btn--line',type:'button','data-ro-ok':'1',title:'내려받기: '+(f.name||''),text:'내려받기',onclick:function(e){saveFile(f,e.currentTarget,s4Nt(b)).then(function(o2){if(o2&&s4IsNew(f)&&D.key)markGot({viewer:'staff',key:D.key},f)})}}):null,
         ok?h('button',{class:'btn btn--sm btn--del',type:'button','aria-label':'파일 빼기: '+(f.name||''),title:'이 박스에서 빼기',text:'빼기',onclick:function(){s4DropFile(c,b,f,s4Nt(b))}}):null)))});
@@ -12762,7 +12792,7 @@ function s4FIcon(f){var t=s4FType(f),w=h('span',{class:'s4-fi s4-fi--'+t[0],'ari
 var S4_KIND_S={in:'받은 서류',out:'줄 파일',own:'사무소 안'};
 function s4BoxDetail(c,b,ok,mode){var fs=s4BFiles(c,b),st=s4State(c,b,fs),late=s4Late(b),r=b.req||null,nt=s4Nt(b),t=s4Tpl(b),list=mode==='list',el=h('section',{class:'s4-bd s4-bd--'+st+(list?' s4-bd--list':''),'data-bxd':b.id,'aria-label':b.name+' 상세'});
   if(list)el.addEventListener('click',function(){D.s4box=b.id},true);
-  var inL=fs.filter(function(f){return f.dir==='in'}).sort(function(a,b2){return (s4IsNew(b2)?1:0)-(s4IsNew(a)?1:0)}),outL=fs.filter(function(f){return f.dir!=='in'}),nw=inL.filter(s4IsNew).length,nreq=r&&r.n||0;
+  var inL=fs.filter(function(f){return f.dir==='in'}).sort(function(a,b2){return (s4NewHere(b2,b)?1:0)-(s4NewHere(a,b)?1:0)}),outL=fs.filter(function(f){return f.dir!=='in'}),nw=inL.filter(function(f){return s4NewHere(f,b)}).length,nreq=r&&r.n||0;
   /* 머리: 이름 · 상태 · 한 줄 요약 · 단추 한 줄(⋯) */
   var meta=st==='none'?'아직 요청 전':st==='closed'?[b.closedAt?fmtDate(b.closedAt).slice(5).replace('-','.')+' 다 받음':'요청 닫힘',b.closedBy&&S.staff[b.closedBy]?nameOf(b.closedBy):'',nreq?'요청 '+nreq+'회':''].filter(Boolean).join(' · ')
     :st==='sent'?[nw?'새 파일 '+nw:'','받은 파일 '+inL.length,r&&r.due?'기한 '+r.due.slice(5).replace('-','.')+' ('+s4DDTxt(s4DD(r.due))+')':''].filter(Boolean).join(' · ')
@@ -13000,11 +13030,11 @@ function s4FilesTab(c,ok,pane){var all=s4AllFiles(c),F=D.s4f=D.s4f||{st:'',box:'
   var q=h('input',{class:'inp',type:'search',placeholder:'파일 이름 찾기','aria-label':'파일 이름 찾기',id:'s4FQ'});q.value=F.q;q.addEventListener('input',function(){F.q=q.value.trim();apply()});
   pane.appendChild(h('div',{class:'s4-fbar','data-ro-ok':'1'},seg,bsel,ksel,h('label',{class:'s4-chkl'},nwc,'새 파일만'),q));
   var selN=h('b',{id:'s4SelN'}),acts=h('div',{class:'s4-facts','data-ro-ok':'1'},selN,
-    C&&C.downloads?h('button',{class:'btn btn--sm',type:'button',id:'s4ZipSel',text:'고른 것 내려받기 (zip)',onclick:function(e){var rs=all.filter(function(r){return sel[r.key]});if(!rs.length){wsToast('내려받을 파일을 고르세요.');return}s4Zip(rs.map(function(r){return {f:r.f,path:s4Path(r)}}),(c.client||'의뢰인')+'_파일.zip',e.currentTarget)}}):null,
+    C&&C.downloads?h('button',{class:'btn btn--sm',type:'button',id:'s4ZipSel',text:'고른 것 내려받기 (zip)',onclick:function(e){var rs=all.filter(function(r){return sel[r.key]});if(!rs.length){wsToast('내려받을 파일을 고르세요.');return}s4Zip(rs.map(function(r){return {f:r.f,path:s4Path(r)}}),(c.client||'의뢰인')+'_파일.zip',e.currentTarget).then(function(){rs.forEach(function(r){s4Seen(r.f)})})}}):null,
     ok?h('button',{class:'btn btn--sm btn--line',type:'button',id:'s4MoveSel',text:'다른 박스로 옮기기',onclick:function(){s4MoveSheet(c,all.filter(function(r){return sel[r.key]&&!r.fixed}))}}):null,
     ok?h('button',{class:'btn btn--sm btn--line',type:'button',id:'s4SendSel',text:'의뢰인에게 보내기',onclick:function(){s4SendSel(c,all.filter(function(r){return sel[r.key]&&r.f.src!=='trk'}))}}):null,
     ok?h('button',{class:'btn btn--sm btn--del',type:'button',id:'s4DelSel',text:'고른 것 삭제',onclick:function(){s4DelSheet(c,all.filter(function(r){return sel[r.key]}))}}):null, /* v191 */
-    h('span',{class:'s4-sp'}),C&&C.downloads?h('button',{class:'btn btn--sm btn--line',type:'button',id:'s4ZipAll',text:'전체 내려받기 (단계·박스별 폴더 zip)',onclick:function(e){if(!all.length){wsToast('파일이 없습니다.');return}s4Zip(all.map(function(r){return {f:r.f,path:s4Path(r)}}),(c.client||'의뢰인')+'_전체파일.zip',e.currentTarget)}}):null);
+    h('span',{class:'s4-sp'}),C&&C.downloads?h('button',{class:'btn btn--sm btn--line',type:'button',id:'s4ZipAll',text:'전체 내려받기 (단계·박스별 폴더 zip)',onclick:function(e){if(!all.length){wsToast('파일이 없습니다.');return}s4Zip(all.map(function(r){return {f:r.f,path:s4Path(r)}}),(c.client||'의뢰인')+'_전체파일.zip',e.currentTarget).then(function(){all.forEach(function(r){s4Seen(r.f)})})}}):null);
   pane.appendChild(acts);
   var tb=h('table',{class:'tbl s4-ftbl',id:'s4FTbl'}),hd=h('tr',null,h('th',{style:'width:30px'}),h('th',{text:'파일'}),h('th',{text:'박스'}),h('th',{text:'종류'}),h('th',{text:'올린 사람 · 때'}),h('th',{class:'num',text:'크기'}),h('th')),bd=h('tbody');
   var allc=h('input',{type:'checkbox','aria-label':'보이는 파일 모두 고르기'});allc.addEventListener('change',function(){$$('tr[data-fk]',bd).forEach(function(tr){if(tr.hidden)return;var k=tr.getAttribute('data-fk');if(allc.checked)sel[k]=1;else delete sel[k];tr.querySelector('input').checked=allc.checked});cntSel()});hd.firstChild.appendChild(allc);
@@ -13014,12 +13044,12 @@ function s4FilesTab(c,ok,pane){var all=s4AllFiles(c),F=D.s4f=D.s4f||{st:'',box:'
   groups.forEach(function(g){var rs=all.filter(function(r){return r.stage===g[0]}).sort(function(a,b){return ((a.b&&a.b.name)||'').localeCompare((b.b&&b.b.name)||'','ko')||(b.f.at||0)-(a.f.at||0)});if(!rs.length)return;
     bd.appendChild(h('tr',{class:'s4-fg','data-fg':String(g[0])},h('td',{colspan:'7'},h('b',{text:g[1]}),h('span',{class:'sub',text:' '+rs.length+'개'}))));
     rs.forEach(function(r){var f=r.f,cb=h('input',{type:'checkbox','aria-label':(f.name||'파일')+' 고르기'});cb.checked=!!sel[r.key];cb.addEventListener('change',function(){if(cb.checked)sel[r.key]=1;else delete sel[r.key];cntSel()});
-      var a=h('a',{href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',text:f.name||'파일'});pvAttrs(a,f,f.who,f.at);
+      var a=h('a',{href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',text:f.name||'파일',onclick:function(){setTimeout(function(){s4Seen(f)},0)},onpvopen:function(){setTimeout(function(){s4Seen(f)},0)}});pvAttrs(a,f,f.who,f.at);
       var who=f.who==='client'?'의뢰인':f.who&&S.staff[f.who]?nameOf(f.who)+(f.src==='int'&&f.dir==='in'?' (대신 받음)':''):'사무소';
       bd.appendChild(h('tr',{'data-fk':r.key,'data-st':String(r.stage),'data-bx':r.b?r.b.id:'','data-kind':r.kind,'data-new':r.isNew?'1':'','data-name':String(f.name||'').toLowerCase(),class:sel[r.key]?'is-sel':null},
         h('td',null,cb),h('td',null,h('span',{class:'ext',text:((f.name||'').split('.').pop()||'').toUpperCase().slice(0,4)}),' ',a,r.isNew?h('span',{class:'pill pill--new',text:'새 파일'}):null),
         h('td',{text:r.b?r.b.name:'— (박스로 옮기기)'}),h('td',null,h('span',{class:'s4-kind s4-kind--'+r.kind,text:KN[r.kind]})),h('td',{class:'sub',text:who+' · '+fmtDate(f.at||0).slice(5)+' '+fmtTime(f.at||0)}),h('td',{class:'num sub',text:+f.size?fmtSize(+f.size):''}),
-        h('td',{class:'num'},C&&C.downloads?h('button',{class:'btn btn--sm btn--line',type:'button','data-ro-ok':'1',text:'내려받기',onclick:function(e){saveFile(f,e.currentTarget,$('#s4FNt'))}}):null,ok?s4DelBtn(c,r):null)))})});
+        h('td',{class:'num'},C&&C.downloads?h('button',{class:'btn btn--sm btn--line',type:'button','data-ro-ok':'1',text:'내려받기',onclick:function(e){saveFile(f,e.currentTarget,$('#s4FNt')).then(function(o2){if(o2)s4Seen(f)})}}):null,ok?s4DelBtn(c,r):null)))})});
   if(!all.length)bd.appendChild(h('tr',null,h('td',{colspan:'7'},h('div',{class:'empty',style:'border:0',text:'아직 주고받은 파일이 없습니다.'}))));
   tb.appendChild(bd);pane.appendChild(h('div',{class:'clist s4-fwrap'},tb));pane.appendChild(h('div',{class:'note',id:'s4FNt',role:'status',hidden:true}));
   function cntSel(){var n=Object.keys(sel).length;selN.textContent=n?n+'개 고름':'고른 파일 없음';$$('tr[data-fk]',bd).forEach(function(tr){tr.classList.toggle('is-sel',!!sel[tr.getAttribute('data-fk')])})}
@@ -15139,6 +15169,7 @@ $('#loginForm').addEventListener('submit',async function(e){e.preventDefault();v
   card.addEventListener('dragleave',function(){if(--dn<=0){dn=0;dz.hidden=true}});
   card.addEventListener('drop',function(e){if(dz.hidden)return;e.preventDefault();dn=0;dz.hidden=true;go([].slice.call(e.dataTransfer.files||[]))});
   window.ccAttReady=function(can){att.hidden=!can}})();
+$('#ccAskChat').addEventListener('click',function(){if(ccMob()){ccPane('c');return}var c=$('#ccChatCard');if(c){window.scrollTo({top:Math.max(0,c.getBoundingClientRect().top+window.scrollY-80),behavior:'smooth'});setTimeout(function(){var t=$('#ccText');if(t)try{t.focus({preventScroll:true})}catch(e){}},400)}});
 $('#ccOut').addEventListener('click',function(){logout()});
 bindDrop($('#ccDrop'),$('#ccFile'),$('#ccPick'),function(files){sendFiles(K.key,files,'client',$('#ccFileNote'),K.caseId)});
 $('#ccCamBtn').addEventListener('click',function(){$('#ccCam').click()});$('#ccCam').addEventListener('change',function(){var i=$('#ccCam'),a=[].slice.call(i.files||[]);i.value='';if(a.length)sendFiles(K.key,a,'client',$('#ccFileNote'),K.caseId)});
