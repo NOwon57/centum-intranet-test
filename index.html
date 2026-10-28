@@ -411,7 +411,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
     gate.querySelector('#sbxSwap').textContent = up ? '이미 계정이 있어요 · 로그인' : '처음이신가요? 가입하기';
     gate.querySelector('#sbxPw').setAttribute('autocomplete', up ? 'new-password' : 'current-password');
     [].forEach.call(gate.querySelectorAll('.sbx-su'), function (x) { x.hidden = !up; });
-    gateMsg(''); setTimeout(function () { var i = gate.querySelector('#sbxId'); if (i) i.focus(); }, 30);
+    gateMsg(''); setTimeout(function () { var a = document.activeElement, i = gate.querySelector('#sbxId'); if (i && !(a && a.tagName === 'INPUT' && gate.contains(a))) i.focus(); }, 30); /* 이미 고른 칸의 커서는 빼앗지 않음 */
   }
   var busy = false;
   async function onSubmit(e) {
@@ -454,7 +454,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
       try { var msg = await run(v); note.textContent = msg || '완료했습니다.'; note.className = 'sbx-note is-ok'; setTimeout(close, 1400); }
       catch (x) { note.textContent = (x && x.message) || '하지 못했습니다.'; note.className = 'sbx-note is-bad'; row.lastChild.disabled = false; }
     });
-    setTimeout(function () { var i = card.querySelector('input'); if (i) i.focus(); }, 30);
+    setTimeout(function () { var a = document.activeElement, i = card.querySelector('input'); if (i && !(a && a.tagName === 'INPUT' && card.contains(a))) i.focus(); }, 30); /* 이미 고른 칸의 커서는 빼앗지 않음 */
   }
   function acctUi() {
     var top = document.querySelector('#intra .intra__top .wrap'); if (!top || document.getElementById('sbxAcct')) return;
@@ -5002,7 +5002,7 @@ tr[data-fk] .pill--new{margin-left:14px}
 <header class="hd">
   <div class="wrap hd__in">
     <a class="brand" href="#top" data-scroll>
-      <span class="brand__mark brand__mark--light"><img src="mark-light.webp" alt="" width="397" height="193"></span>
+      <span class="brand__mark brand__mark--light"><img src="img/mark-light.webp" alt="" width="397" height="193"></span>
       <span class="brand__name">센텀 법무사 사무소<span class="brand__en">CENTUM LAW OFFICE</span></span>
     </a>
     <a class="btn hd__cta" href="#consult" data-scroll><span class="hd__cta-l">회생법원 출신 법무사와</span><b>상담신청</b></a>
@@ -5035,19 +5035,19 @@ tr[data-fk] .pill--new{margin-left:14px}
 <section class="intro" id="intro" aria-label="센텀 법무사 사무소 첫 화면">
   <div class="intro__bg" id="introBg" aria-hidden="true">
   <div class="intro__slides">
-      <figure class="intro__s is-on is-top" data-cap="광안대교와 마린시티"><img src="intro-2.webp" srcset="intro-2-s.webp 1080w, intro-2.webp 1920w" sizes="100vw" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure class="intro__s" data-cap="해동용궁사"><img src="intro-3.webp" srcset="intro-3-s.webp 1080w, intro-3.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="intro__s" data-cap="해운대"><img src="intro-4.webp" srcset="intro-4-s.webp 1080w, intro-4.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="intro__s" data-cap="마린시티"><img src="intro-5.webp" srcset="intro-5-s.webp 1080w, intro-5.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="intro__s" data-cap="해운대 바다"><img src="intro-7.webp" srcset="intro-7-s.webp 1080w, intro-7.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="intro__s is-on is-top" data-cap="광안대교와 마린시티"><img src="img/intro-2.webp" srcset="img/intro-2-s.webp 1080w, img/intro-2.webp 1920w" sizes="100vw" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="intro__s" data-cap="해동용궁사"><img src="img/intro-3.webp" srcset="img/intro-3-s.webp 1080w, img/intro-3.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="intro__s" data-cap="해운대"><img src="img/intro-4.webp" srcset="img/intro-4-s.webp 1080w, img/intro-4.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="intro__s" data-cap="마린시티"><img src="img/intro-5.webp" srcset="img/intro-5-s.webp 1080w, img/intro-5.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="intro__s" data-cap="해운대 바다"><img src="img/intro-7.webp" srcset="img/intro-7-s.webp 1080w, img/intro-7.webp 1920w" sizes="100vw" alt="" loading="lazy" decoding="async"></figure>
   </div>
   <div class="intro__veil"></div>
   <div class="intro__shade" id="introShade"></div>
   <div class="intro__dim" id="introDim"></div>
   </div>
   <div class="intro__logo" role="img" aria-label="센텀 법무사 사무소 · CENTUM LAW OFFICE">
-    <img class="intro__c" src="logo-c.webp" alt="" width="1400" height="629">
-    <img class="intro__en" src="logo-en.webp" alt="" width="1600" height="86">
+    <img class="intro__c" src="img/logo-c.webp" alt="" width="1400" height="629">
+    <img class="intro__en" src="img/logo-en.webp" alt="" width="1600" height="86">
   </div>
   <div class="intro__main"><div class="intro__row">
     <div class="intro__tx">
@@ -5056,7 +5056,7 @@ tr[data-fk] .pill--new{margin-left:14px}
       <div class="intro__who" style="--i:2"><span class="intro__tags">회생위원 출신<i aria-hidden="true"></i>개인회생<i aria-hidden="true"></i>개인파산 전문 법무사</span><b class="intro__name shx shx--g3">정욱상</b></div>
     </div>
     <figure class="intro__ph">
-      <span class="intro__fr"><img src="intro-p.webp" srcset="intro-p-s.webp 900w, intro-p.webp 1600w" sizes="(max-width:820px) 92vw, 48vw" alt="부산회생법원 회생위원 간담회에서 발표하는 정욱상 법무사" width="1600" height="900" fetchpriority="high" decoding="async"></span>
+      <span class="intro__fr"><img src="img/intro-p.webp" srcset="img/intro-p-s.webp 900w, img/intro-p.webp 1600w" sizes="(max-width:820px) 92vw, 48vw" alt="부산회생법원 회생위원 간담회에서 발표하는 정욱상 법무사" width="1600" height="900" fetchpriority="high" decoding="async"></span>
       <figcaption><span class="shx shx--foil">부산회생법원 회생위원 간담회</span></figcaption>
     </figure>
   </div></div>
@@ -5204,10 +5204,10 @@ tr[data-fk] .pill--new{margin-left:14px}
     </div>
     <div class="hero__art">
       <div class="hero__logo" role="img" aria-label="센텀 법무사 사무소 로고 — 회생법원 출신 법무사 정욱상">
-        <img class="lg lg--c" src="logo-c.webp" alt="" width="1400" height="629">
-        <img class="lg lg--ko" src="logo-ko.webp" alt="" width="1600" height="263">
-        <img class="lg lg--en" src="logo-en.webp" alt="" width="1600" height="86">
-        <img class="lg lg--name" src="logo-name.webp" alt="" width="1600" height="145">
+        <img class="lg lg--c" src="img/logo-c.webp" alt="" width="1400" height="629">
+        <img class="lg lg--ko" src="img/logo-ko.webp" alt="" width="1600" height="263">
+        <img class="lg lg--en" src="img/logo-en.webp" alt="" width="1600" height="86">
+        <img class="lg lg--name" src="img/logo-name.webp" alt="" width="1600" height="145">
       </div>
     </div>
   </div>
@@ -5221,7 +5221,7 @@ tr[data-fk] .pill--new{margin-left:14px}
   <div class="court-pin"><div class="court-stick">
   <div class="wrap court">
     <div class="court__cell"><figure class="court__ph">
-      <img src="committee.webp" alt="부산회생법원 회생위원 간담회에서 발표하는 모습" width="1500" height="859" loading="lazy">
+      <img src="img/committee.webp" alt="부산회생법원 회생위원 간담회에서 발표하는 모습" width="1500" height="859" loading="lazy">
       <figcaption>부산회생법원 회생위원 간담회</figcaption>
     </figure></div>
     <div class="court__tx">
@@ -5410,7 +5410,7 @@ tr[data-fk] .pill--new{margin-left:14px}
 <footer class="ft">
   <div class="wrap">
     <div class="ft__in">
-      <img src="emblem.webp" alt="" width="600" height="259">
+      <img src="img/emblem.webp" alt="" width="600" height="259">
       <div>
         <strong>센텀 법무사 사무소</strong>
         대표 법무사 정욱상 · 부산지방법무사회 소속 · 법무사 등록번호 제○○○○호<br>
@@ -5475,7 +5475,7 @@ tr[data-fk] .pill--new{margin-left:14px}
   <div class="intra__top">
     <div class="wrap">
       <a class="brand" href="#top" data-view="site">
-        <span class="brand__mark"><img src="mark.webp" alt="" width="54" height="44"></span>
+        <span class="brand__mark"><img src="img/mark.webp" alt="" width="54" height="44"></span>
         <span class="brand__name">센텀 법무사 사무소<span class="brand__en">CASE DESK</span></span>
       </a>
       <a class="btn btn--sm btn--ghost" href="#top" data-view="site">홈페이지</a>
@@ -5549,7 +5549,7 @@ tr[data-fk] .pill--new{margin-left:14px}
   <div class="intra__top">
     <div class="wrap">
       <a class="brand" href="#top" data-view="site">
-        <span class="brand__mark"><img src="mark.webp" alt="" width="54" height="44"></span>
+        <span class="brand__mark"><img src="img/mark.webp" alt="" width="54" height="44"></span>
         <span class="brand__name">센텀 인트라넷<span class="brand__en">STAFF ONLY</span></span>
       </a>
       <div class="me" id="meChip" hidden><img id="meImg" alt=""><span id="meName"></span></div>
@@ -14094,7 +14094,7 @@ getCtx().then(function(c){
 
 /* ── 사진: 홈페이지 표시 + 인트라넷 관리(대표) ──
    photos/<id> = {title, body, asset(올린 사진) 또는 src(함께 게시한 예시 사진 파일), order, at, by}. 읽기는 누구나, 쓰기는 대표만(접근 규칙). */
-function phUrl(p){return typeof p.asset==='string'&&/^[0-9a-f]{32}$/.test(p.asset)?'/centum-intranet-test/_blob/'+p.asset:typeof p.src==='string'&&/^gallery-[1-9]\.webp$/.test(p.src)?p.src:''}
+function phUrl(p){return typeof p.asset==='string'&&/^[0-9a-f]{32}$/.test(p.asset)?'/centum-intranet-test/_blob/'+p.asset:typeof p.src==='string'&&/^gallery-[1-9]\.webp$/.test(p.src)?'img/'+p.src:''}
 function phList(){return S.photos.filter(function(p){return typeof p.title==='string'&&p.title&&phUrl(p)}).sort(function(a,b){return (+a.order||0)-(+b.order||0)||(a.at||0)-(b.at||0)})}
 var phAt=-1;
 var galOpen=false,galN=0,galT=0;
