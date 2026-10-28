@@ -4870,6 +4870,58 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
   .cck__top .btn{min-height:44px}
   .mycase .flist .btn{min-height:40px}
 }
+/* ── v199 의뢰인 진행 조회: 할 일 먼저 · 크게 · 쉽게 ── */
+.cctodo{margin:22px 0 6px;border:2px solid var(--ink);background:#fff;padding:16px}
+.cctodo__hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.cctodo__hd h3{margin:0;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.cctodo__n{flex:none;font-size:13px;font-weight:800;padding:3px 11px;border-radius:999px;background:var(--danger);color:#fff}
+.cctodo__n.is-ok{background:var(--ok-soft);color:var(--ok)}
+.cctodo__none{margin:0;font-size:15px;color:var(--ink-2);line-height:1.6}
+.cctodo__r{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:12px 14px;margin-top:8px;border:1px solid var(--line);background:var(--paper);font:inherit;color:var(--ink);text-align:left;cursor:pointer;box-shadow:inset 5px 0 0 var(--apricot-deep);transition:background .15s,transform .15s}
+.cctodo__r:hover{background:var(--apricot-soft)}
+.cctodo__r:active{transform:scale(.99)}
+.cctodo__r:focus-visible{outline:2px solid var(--apricot-deep);outline-offset:2px}
+.cctodo__r.is-hot{box-shadow:inset 5px 0 0 var(--danger)}
+.cctodo__r.is-sent{box-shadow:inset 5px 0 0 #d9cfc5;background:#faf7f4}
+.cctodo__t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}
+.cctodo__t b{font-size:16.5px;font-weight:800;line-height:1.35;overflow-wrap:anywhere}
+.cctodo__d{font-size:14px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cctodo__r.is-hot .cctodo__d{color:var(--danger)}
+.cctodo__r.is-sent .cctodo__d{color:var(--muted);font-weight:500}
+.cctodo__go{flex:none;display:flex;align-items:center;gap:6px}
+.cctodo__p{font-size:14px;font-weight:800;padding:8px 14px;background:var(--ink);color:var(--on-ink)}
+.cctodo__r.is-sent .cctodo__p{background:var(--apricot-soft);color:var(--apricot-deep);font-size:12.5px;padding:6px 10px}
+.cctodo__ar{font-size:22px;line-height:1;color:var(--muted)}
+.cc__sh{margin:26px 0 0;font-size:16px;font-weight:800}
+.cc__sh+.trk{margin-top:16px}
+/* 서류 상자: 더 크게, 안내문은 굵게 */
+.ccb{padding:18px;gap:14px;margin-top:14px}
+.ccb.is-open{padding:17px;border-width:2px}
+.ccb__hd b{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.ccb__p{font-size:13.5px;padding:4px 12px}
+.ccb__due{font-size:15.5px;font-weight:800}
+.ccb__docs{display:flex;flex-direction:column;gap:6px;font-size:16.5px;font-weight:700;line-height:1.75;padding:14px 16px;color:var(--ink);background:#fbf6f1;border-left:4px solid var(--apricot-deep)}
+.ccb__dh{font-size:13px;font-weight:800;color:var(--apricot-deep);letter-spacing:.02em}
+.ccb__dt{white-space:pre-line}
+.ccb__brief{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.6}
+.ccb__lab{font-size:14px}
+.ccb__row{font-size:15px;min-height:50px}
+.ccb__more{font-size:15.5px;font-weight:800;background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.ccb__more:hover{background:#2a2420}
+.ccb__sep{margin:22px 0 2px;font-size:14px;font-weight:800;color:var(--ok);display:flex;align-items:center;gap:10px}
+.ccb__sep::after{content:"";flex:1;height:1px;background:#cfe3d7}
+.ccb.is-done .ccb__hd b{font-size:16.5px}
+.ccb.is-flash{animation:ccFlash 1.6s ease-out}
+@keyframes ccFlash{0%{box-shadow:0 0 0 0 rgba(197,108,54,.0)}15%{box-shadow:0 0 0 6px rgba(197,108,54,.45)}100%{box-shadow:0 0 0 0 rgba(197,108,54,0)}}
+.cck.is-flash{animation:ccFlash 1.6s ease-out}
+.ccup__b{min-height:58px;font-size:16px}
+@media (max-width:720px){
+  .cctodo{margin:16px -4px 4px;padding:14px 12px}
+  .cctodo__p{padding:8px 12px}
+  .ccb{padding:16px 14px}
+  .ccb.is-open{padding:15px 13px}
+}
+@media (prefers-reduced-motion:reduce){.cctodo__r{transition:none}}
 </style>
 <script>
 (function(){try{if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim')}catch(e){}})();
@@ -5383,7 +5435,7 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
       <div class="mycase__card" id="ccStatus" data-ccp="s"></div>
       <div class="mycase__card" id="ccCkCard" data-ccp="d" hidden>
         <h3>보내 주실 서류 <span class="pill" id="ccCkN"></span></h3>
-        <p class="sub" id="ccCkSub">사무소가 요청한 서류입니다. 서류마다 「사진 찍기 · 파일 올리기」로 보내 주세요. 사무소가 다 받으면 「받았습니다」로 바뀝니다.</p>
+        <p class="sub" id="ccCkSub" hidden></p>
         <div id="ccCk"></div>
       </div>
       <div class="mycase__card" data-ccp="d" id="ccFileCard">
@@ -9815,9 +9867,9 @@ function trackCk(c){if(!is16(c)||typeof c.st4==='number')return [];var out=[];fo
 /* 의뢰인 진행 화면: 공유된 항목마다 서류 올리기 */
 function drawClientCk(){var card=$('#ccCkCard'),box=$('#ccCk');if(!card||!box)return;var t=K.trk||{},list=(Array.isArray(t.ck16)?t.ck16:[]).filter(function(x){return x&&typeof x.t==='string'&&typeof x.n==='number'&&typeof x.id==='string'});
   var bl4=(Array.isArray(t.bx4)?t.bx4:[]).filter(function(b){return b&&typeof b.id==='string'&&typeof b.name==='string'});
-  card.hidden=!list.length&&!bl4.length;box.textContent='';if(!list.length&&!bl4.length){K.ckLeft=0;K.ckNeed=0;ccNavDraw();return}var canUp=!!(C&&C.assets),last=null,grp=null,left=list.filter(function(x){return !x.done}).length+bl4.filter(function(b){return b.st==='req'}).length;if(bl4.length)ccBx4(box,bl4,canUp);
-  K.ckLeft=left;var fsC=(K.files||[]).filter(function(f){return f.from==='client'});K.ckNeed=bl4.filter(function(b){return b.st==='req'&&!fsC.some(function(f){return f.bx===b.id&&(f.at||0)>(b.at||0)})}).length+list.filter(function(x){return !x.done&&!fsC.some(function(f){return f.ck===x.n+':'+x.id})}).length;ccNavDraw();var cn=$('#ccCkN'),sb=$('#ccCkSub');if(!list.length){var lt4=bl4.filter(function(b){return b.st==='req'&&b.due&&b.due<today()}).length;cn.textContent=left?left+'건':'모두 받았습니다';cn.className='pill'+(lt4?' pill--bad':left?' pill--new':' pill--done');if(sb)sb.textContent='사무소가 요청한 서류입니다. 서류마다 「사진 찍기 · 파일 올리기」로 보내 주세요. 사무소가 다 받으면 「받았습니다」로 바뀝니다.'}
-  else{cn.textContent=left?'남은 항목 '+left+'개':'모두 확인되었습니다';cn.className='pill'+(left?' pill--new':' pill--done');if(sb)sb.textContent='사무소가 요청한 서류입니다. 항목마다 「서류 올리기」로 바로 보내 주세요(항목당 3개까지). 담당자가 확인하면 「확인 완료」로 바뀝니다.'}
+  card.hidden=!list.length&&!bl4.length;box.textContent='';if(!list.length&&!bl4.length){K.ckLeft=0;K.ckNeed=0;ccNavDraw();ccTodoDraw();return}var canUp=!!(C&&C.assets),last=null,grp=null,left=list.filter(function(x){return !x.done}).length+bl4.filter(function(b){return b.st==='req'}).length;if(bl4.length)ccBx4(box,bl4,canUp);
+  ccTodoDraw();K.ckLeft=left;var fsC=(K.files||[]).filter(function(f){return f.from==='client'});K.ckNeed=bl4.filter(function(b){return b.st==='req'&&!fsC.some(function(f){return f.bx===b.id&&(f.at||0)>(b.at||0)})}).length+list.filter(function(x){return !x.done&&!fsC.some(function(f){return f.ck===x.n+':'+x.id})}).length;ccNavDraw();var cn=$('#ccCkN'),sb=$('#ccCkSub');if(!list.length){var lt4=bl4.filter(function(b){return b.st==='req'&&b.due&&b.due<today()}).length;cn.textContent=left?left+'건':'모두 받았습니다';cn.className='pill'+(lt4?' pill--bad':left?' pill--new':' pill--done');if(sb)sb.hidden=true}
+  else{cn.textContent=left?'남은 항목 '+left+'개':'모두 확인되었습니다';cn.className='pill'+(left?' pill--new':' pill--done');if(sb)sb.hidden=true}
   list.forEach(function(x){if(x.n!==last){last=x.n;grp=h('ul',{class:'cck__l'});box.appendChild(h('section',{class:'cck__g'},h('h4',{text:x.step||stepName(x.n)}),grp))}
     var key=x.n+':'+x.id,mine=(K.files||[]).filter(function(f){return f.from==='client'&&f.ck===key}).sort(function(a,b){return (a.at||0)-(b.at||0)}),room=Math.max(0,CK_MAX-(x.sf|0)-mine.length),nt=(K.ckNt=K.ckNt||{})[key]||(K.ckNt[key]=h('div',{class:'note',role:'status',hidden:true}));
     var st=x.done?['확인 완료','pill--done']:mine.length?['보냄 · 사무소 확인 중','pill--new']:['보내 주세요',''];
@@ -13046,7 +13098,7 @@ function ccOne(t){return String(t||'').split('\n').map(function(x){return x.repl
 function ccBx4(box,bl,canUp){K.bxOpen=K.bxOpen||{};var dk=function(b){return b.due||'9999'};
   var open=bl.filter(function(b){return b.st==='req'}).sort(function(a,b){return dk(a).localeCompare(dk(b))||(a.at||0)-(b.at||0)}),done=bl.filter(function(b){return b.st!=='req'}).sort(function(a,b){return (b.closedAt||0)-(a.closedAt||0)});
   open.forEach(function(b,i){var ex=K.bxOpen[b.id]!==undefined?K.bxOpen[b.id]:i===0;box.appendChild(ccBoxCard(b,ex,canUp,open.length>1))});
-  done.forEach(function(b){box.appendChild(ccBoxCard(b,false,canUp,false))})}
+  if(done.length)box.appendChild(h('div',{class:'ccb__sep',text:'사무소가 다 받은 서류'}));done.forEach(function(b){box.appendChild(ccBoxCard(b,false,canUp,false))})}
 function ccBoxCard(b,ex,canUp,many){var fs=K.files||[],mine=fs.filter(function(f){return f.from==='client'&&f.bx===b.id}).sort(function(a,c2){return (a.at||0)-(c2.at||0)}),office=fs.filter(function(f){return f.from!=='client'&&f.bx===b.id});
   var open=b.st==='req',sent=mine.some(function(f){return (f.at||0)>(b.at||0)}),dd=s4DD(b.due),kk='bx:'+b.id,nt=(K.ckNt=K.ckNt||{})[kk]||(K.ckNt[kk]=h('div',{class:'note',role:'status',hidden:true}));
   var pill=!open?['받았습니다 ✓','ok']:sent?['확인 중','wait']:['보내 주세요','need'];
@@ -13054,15 +13106,15 @@ function ccBoxCard(b,ex,canUp,many){var fs=K.files||[],mine=fs.filter(function(f
   if(!open){card.appendChild(h('span',{class:'ccb__sum',text:[b.closedAt?s4DateK(d16(b.closedAt))+' 확인':'',mine.length?'보낸 파일 '+mine.length+'개':'','더 올릴 필요 없음'].filter(Boolean).join(' · ')}));return card}
   if(b.due)card.appendChild(h('div',{class:'ccb__due'+(dd!==null&&dd<=3?' is-hot':''),text:'기한 '+s4DateK(b.due)+(dd===null?'':' · '+(dd<0?(-dd)+'일 지남':dd===0?'오늘까지':dd+'일 남음'))}));
   if(!ex){card.appendChild(h('div',{class:'ccb__brief',text:ccOne(b.docs)||ccOne(b.desc)}));
-    card.appendChild(h('button',{class:'ccb__row ccb__more',type:'button','data-ccbxmore':b.id,'aria-expanded':'false',onclick:function(){K.bxOpen[b.id]=true;drawClientCk()}},h('span',{text:'자세히 보고 올리기'}),h('span',{'aria-hidden':'true',text:'›'})));return card}
-  if(b.docs||b.desc)card.appendChild(h('div',{class:'ccb__docs',text:[b.docs,b.desc].filter(Boolean).join('\n\n')}));
+    card.appendChild(h('button',{class:'ccb__row ccb__more',type:'button','data-ccbxmore':b.id,'aria-expanded':'false',onclick:function(){K.bxOpen[b.id]=true;drawClientCk()}},h('span',{text:'열어서 보내기'}),h('span',{'aria-hidden':'true',text:'›'})));return card}
+  if(b.docs||b.desc)card.appendChild(h('div',{class:'ccb__docs'},h('span',{class:'ccb__dh',text:'보내 주실 서류'}),h('span',{class:'ccb__dt',text:[b.docs,b.desc].filter(Boolean).join('\n\n')})));
   if(office.length){var ol=h('div',{class:'ccb__f'});office.forEach(function(f){var a=h('a',{class:'ccb__row',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',onclick:function(){if(K.key)markGot({viewer:'client',key:K.key},f)}},h('span',{class:'ccb__n',text:f.name||'파일'}),h('span',{class:'ccb__dl',text:'내려받기'}));pvAttrs(a,f,'',f.at);ol.appendChild(a)});
     card.appendChild(h('div',null,h('div',{class:'ccb__lab',text:'사무소에서 보낸 파일'}),ol))}
   if(mine.length){var ml=h('div',{class:'ccb__f'});mine.forEach(function(f){ml.appendChild(h('div',{class:'ccb__row'},h('a',{class:'ccb__n',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',text:f.name||'파일'}),h('span',{class:'ccb__at',text:fmtDate(f.at||0).slice(5)}),
       canUp?h('button',{class:'ccb__x',type:'button','aria-label':'보낸 파일 지우기: '+(f.name||''),text:'지우기',onclick:function(){dropTrackFile(K.key,f,nt)}}):null))});
     card.appendChild(h('div',null,h('div',{class:'ccb__lab',text:'내가 보낸 파일 '+mine.length}),ml))}
   if(canUp){card.appendChild(ccUpBtns(function(a){sendFiles(K.key,a,'client',nt,K.caseId,{bx:b.id,bxT:String(b.name).slice(0,60)})},{id:b.id,label:'사진 찍기 · 파일 올리기'}));
-    card.appendChild(h('span',{class:'ccb__hint',text:'서류 한 장마다 「사진 찍기」로 찍어 보내셔도 됩니다. 앨범에 있는 사진이나 PDF는 여러 개를 한꺼번에 고를 수 있습니다.'}))}
+}
   else card.appendChild(h('span',{class:'ccb__hint',text:'지금은 이 화면에서 파일을 올릴 수 없습니다. 담당자에게 문의해 주세요.'}));
   card.appendChild(nt);
   if(many)card.appendChild(h('button',{class:'ccb__fold',type:'button',onclick:function(){K.bxOpen[b.id]=false;drawClientCk()}},'접기'));
@@ -14101,10 +14153,12 @@ function renderTrack(t){
   if(t.note)info.appendChild(h('div',null,h('dt',{text:'사무소 안내'}),h('dd',{text:t.note,style:'user-select:text'})));
   info.appendChild(h('div',null,h('dt',{text:'문의'}),h('dd',null,telA(),' (평일 09:00 – 18:00)')));
   var box=$('#ccStatus');box.textContent='';
-  box.appendChild(h('span',{class:'case__type',text:(t.type||'개인회생 신청')+(t.code?' · 접수번호 '+t.code:'')}));box.appendChild(h('h2',{text:t.title||''}));box.appendChild(trk);
+  box.appendChild(h('span',{class:'case__type',text:(t.type||'개인회생 신청')+(t.code?' · 접수번호 '+t.code:'')}));box.appendChild(h('h2',{text:t.title||''}));
+  box.appendChild(h('div',{class:'cctodo',id:'ccTodo'}));box.appendChild(h('h3',{class:'cc__sh',text:'진행 단계'}));box.appendChild(trk);
   var needBox=null, /* v152: 「서류」 탭과 함께 없앰. 보낼 서류는 「보내 주실 서류」 카드(진행 단계 공유 항목)로 */
     dateBox=Array.isArray(t.dates)&&t.dates.length?h('div',{class:'cc__need',id:'ccDates'},h('b',{text:'다음 일정'}),h('ul',null,t.dates.slice(0,6).map(function(x){return h('li',{text:String(x.t||'')+' · '+String(x.d||'').replace(/-/g,'.')})}))):null;
-  box.appendChild(typeof t.step==='number'?h('div',{class:'nowbox'},h('b',{text:'현재 단계: '+(t.stepName||'')+(typeof t.st4==='number'?' ('+t.st4+'/4)':t.step<=16?' ('+t.step+'/16)':'')}),t.stepMsg||''):h('div',{class:'nowbox'},h('b',{text:'현재 단계: '+STAGES[st]}),STAGE_MSG[st]));if(dateBox)box.appendChild(dateBox);if(needBox)box.appendChild(needBox);box.appendChild(info);
+  /* v199: 「현재 단계」 설명 상자와 「다음 일정」은 뺌 — 할 일은 맨 위 「지금 보내 주실 서류」에서 */
+  if(needBox)box.appendChild(needBox);box.appendChild(info);ccTodoDraw();
   if(t.fee2&&(t.fee2.total||t.fee2.paid||(t.fee2.bills||[]).length)){box.appendChild(f2Client(t.fee2));return}
   var fe=feeOut(t.fee);
   if(fe){var pd=h('dl',{class:'info'});
@@ -14951,6 +15005,23 @@ async function ccShrink(f){try{if(!/^image\/(jpeg|png|webp)$/.test(f.type||'')||
   var bm=await createImageBitmap(f,{imageOrientation:'from-image'}),k=Math.min(1,2400/Math.max(bm.width,bm.height)),w=Math.round(bm.width*k),hh=Math.round(bm.height*k),cv=document.createElement('canvas');cv.width=w;cv.height=hh;
   cv.getContext('2d').drawImage(bm,0,0,w,hh);if(bm.close)bm.close();var bl=await new Promise(function(r){cv.toBlob(r,'image/jpeg',.86)});if(!bl||bl.size>=f.size)return f;
   return new File([bl],String(f.name||'사진').replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg',lastModified:Date.now()})}catch(e){return f}}
+/* v199: 진행 상황 맨 위 「지금 보내 주실 서류」 — 요청 중인 서류마다 기한과 함께, 누르면 그 서류 칸으로 바로 */
+function ccTodoDraw(){var el=$('#ccTodo');if(!el)return;var t=K.trk||{},fsC=(K.files||[]).filter(function(f){return f.from==='client'}),rows=[];
+  (Array.isArray(t.bx4)?t.bx4:[]).filter(function(b){return b&&typeof b.id==='string'&&b.st==='req'}).forEach(function(b){var sent=fsC.some(function(f){return f.bx===b.id&&(f.at||0)>(b.at||0)});rows.push({id:'bx:'+b.id,name:String(b.name||''),due:b.due||'',sent:sent})});
+  (Array.isArray(t.ck16)?t.ck16:[]).filter(function(x){return x&&typeof x.id==='string'&&typeof x.n==='number'&&typeof x.t==='string'&&!x.done}).forEach(function(x){var k=x.n+':'+x.id;rows.push({id:'ck:'+k,name:x.t,due:'',sent:fsC.some(function(f){return f.ck===k})})});
+  rows.sort(function(a,b){return (a.sent-b.sent)||((a.due||'9999').localeCompare(b.due||'9999'))});
+  el.textContent='';var need=rows.filter(function(r){return !r.sent}).length;
+  el.appendChild(h('div',{class:'cctodo__hd'},h('h3',{text:'지금 보내 주실 서류'}),rows.length?h('span',{class:'cctodo__n'+(need?'':' is-ok'),text:need?need+'건':'모두 보냈어요'}):null));
+  if(!rows.length){el.appendChild(h('p',{class:'cctodo__none',text:'지금 보내실 서류가 없습니다. 사무소가 서류를 요청하면 여기에 바로 표시됩니다.'}));return}
+  rows.forEach(function(r){var dd=s4DD(r.due),hot=!r.sent&&dd!==null&&dd<=3,
+    dl=r.due?'기한 '+s4DateK(r.due)+(dd===null?'':' · '+(dd<0?(-dd)+'일 지남':dd===0?'오늘까지':dd+'일 남음')):'기한 없음';
+    el.appendChild(h('button',{class:'cctodo__r'+(r.sent?' is-sent':'')+(hot?' is-hot':''),type:'button','data-todo':r.id,onclick:function(){ccGoTodo(r.id)}},
+      h('span',{class:'cctodo__t'},h('b',{text:r.name}),h('span',{class:'cctodo__d',text:dl})),
+      h('span',{class:'cctodo__go'},h('span',{class:'cctodo__p',text:r.sent?'보냄 · 확인 중':'보내기'}),h('span',{'aria-hidden':'true',class:'cctodo__ar',text:'›'}))))})}
+function ccGoTodo(id){var m=/^bx:(.+)$/.exec(id),sel;if(m){K.bxOpen=K.bxOpen||{};K.bxOpen[m[1]]=true;sel='#ccCk [data-ccbx="'+m[1]+'"]'}else sel='#ccCk [data-ck="'+id.slice(3)+'"]';
+  if(ccMob())ccPane('d',false);drawClientCk();
+  setTimeout(function(){var el=$(sel);if(!el)return;var top=el.getBoundingClientRect().top+window.scrollY-((($('#client .intra__top')||{}).offsetHeight)||0)-12;window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+    el.classList.remove('is-flash');void el.offsetWidth;el.classList.add('is-flash');var b=el.querySelector('.ccup__b--cam:not([hidden]),.ccup__b--pick,[data-ckup]');if(b&&b.offsetParent)try{b.focus({preventScroll:true})}catch(e){}},30)}
 function drawClientFiles(){K.fNew=fileSplit($('#ccFiles'),K.files,{key:K.key,noteEl:$('#ccFileNote'),viewer:'client',redraw:drawClientFiles,ready:K.ready.files});newPill($('#ccNewN'),K.fNew);drawClientCk()}
 function drawClientChat(force){var f=force||K.stick;K.stick=false;drawChat($('#ccMsgs'),K.msgs,'client',{ready:K.ready.msgs,force:f,divAt:K.divAt,jump:K.jump,peerAt:K.read.s});ccNavDraw()}
 /* 진행 조회 화면을 보고 있으면 의뢰인이 읽은 것으로 적는다(사무소 화면에 「의뢰인 읽음」으로 보인다) */
