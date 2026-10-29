@@ -4869,9 +4869,9 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
   /* 누르기 쉬운 크기 · 확대되지 않는 글자(16px) */
   #client .inp{font-size:16px}
   #loginForm .btn,#cLogin .btn{min-height:50px;width:100%}
-  .ccb__row,.ccb__more{min-height:48px}
+  .ccb__row,.ccb__more{min-height:44px}
   .ccb__x,.ccb__dl{min-height:40px;display:inline-flex;align-items:center}
-  .ccup__b{min-height:58px;font-size:15.5px}
+  .ccup__b{min-height:48px;font-size:15px}
   #ccDrop p{font-size:13.5px}
   .ccup2{width:100%}.ccup2 .btn{flex:1 1 0;min-height:48px}
   .cck__top .btn{min-height:44px}
@@ -4902,17 +4902,29 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .cc__sh{margin:26px 0 0;font-size:16px;font-weight:800}
 .cc__sh+.trk{margin-top:16px}
 /* 서류 상자: 더 크게, 안내문은 굵게 */
-.ccb{padding:18px;gap:14px;margin-top:14px}
-.ccb.is-open{padding:17px;border-width:2px}
-.ccb__hd b{font-size:19px;font-weight:800;letter-spacing:-.02em}
-.ccb__p{font-size:13.5px;padding:4px 12px}
-.ccb__due{font-size:15.5px;font-weight:800}
-.ccb__docs{display:flex;flex-direction:column;gap:6px;font-size:16.5px;font-weight:700;line-height:1.75;padding:14px 16px;color:var(--ink);background:#fbf6f1;border-left:4px solid var(--apricot-deep)}
-.ccb__dh{font-size:13px;font-weight:800;color:var(--apricot-deep);letter-spacing:.02em}
-.ccb__dt{white-space:pre-line}
-.ccb__brief{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.6}
-.ccb__lab{font-size:14px}
-.ccb__row{font-size:15px;min-height:50px}
+/* v205: 한눈에 들어오게 컴팩트 — 서류는 점 목록, 보낸 파일은 한 상자 안 줄 목록 */
+.ccb{padding:14px 16px;gap:10px;margin-top:12px}
+.ccb.is-open{padding:13px 15px;border-width:2px}
+.ccb__hd{align-items:center}
+.ccb__hd b{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.ccb__p{font-size:12.5px;padding:3px 10px}
+.ccb__due{font-size:13.5px;font-weight:700;margin-top:-6px}
+.ccb__docs{display:flex;flex-direction:column;gap:5px;padding:9px 12px;color:var(--ink);background:#fbf6f1;border-left:3px solid var(--apricot-deep)}
+.ccb__dh{font-size:12px;font-weight:800;color:var(--apricot-deep);letter-spacing:.02em}
+.ccb__dt{display:flex;flex-direction:column;gap:3px;margin:0;padding:0;list-style:none;font-size:14.5px;font-weight:700;line-height:1.45}
+.ccb__dt li{position:relative;padding-left:13px;overflow-wrap:anywhere}
+.ccb__dt li::before{content:"";position:absolute;left:1px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--apricot-deep)}
+.ccb__dd{margin:0;font-size:13px;line-height:1.5;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
+.ccb__brief{font-size:14.5px;font-weight:700;color:var(--ink);line-height:1.5}
+.ccb__lab{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:5px}
+.ccb__cnt{min-width:18px;padding:0 5px;background:var(--ink);color:var(--on-ink);font-size:11.5px;line-height:18px;text-align:center;border-radius:9px}
+.ccb__row{font-size:14.5px;min-height:46px}
+.ccb__f{gap:0;border:1px solid var(--line)}
+.ccb__f .ccb__row{border:0;min-height:40px;padding:0 4px 0 12px}
+.ccb__f .ccb__row+.ccb__row{border-top:1px solid var(--line)}
+.ccb__f .ccb__n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+.ccb__f .ccb__x{min-height:40px;padding:0 8px}
+.ccb>.note{flex:none;padding:9px 12px;font-size:13.5px}
 .ccb__more{font-size:15.5px;font-weight:800;background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .ccb__more:hover{background:#2a2420}
 .ccb__sep{margin:22px 0 2px;font-size:14px;font-weight:800;color:var(--ok);display:flex;align-items:center;gap:10px}
@@ -4921,12 +4933,12 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .ccb.is-flash{animation:ccFlash 1.6s ease-out}
 @keyframes ccFlash{0%{box-shadow:0 0 0 0 rgba(197,108,54,.0)}15%{box-shadow:0 0 0 6px rgba(197,108,54,.45)}100%{box-shadow:0 0 0 0 rgba(197,108,54,0)}}
 .cck.is-flash{animation:ccFlash 1.6s ease-out}
-.ccup__b{min-height:58px;font-size:16px}
+.ccup__b{min-height:48px;font-size:15px}
 @media (max-width:720px){
   .cctodo{margin:16px -4px 4px;padding:14px 12px}
   .cctodo__p{padding:8px 12px}
-  .ccb{padding:16px 14px}
-  .ccb.is-open{padding:15px 13px}
+  .ccb{padding:13px 13px}
+  .ccb.is-open{padding:12px 12px}
 }
 @media (prefers-reduced-motion:reduce){.cctodo__r{transition:none}}
 /* ── v200 의뢰인 대화: 메신저 · 사진·파일 ── */
@@ -13203,12 +13215,13 @@ function ccBoxCard(b,ex,canUp,many){var fs=K.files||[],mine=fs.filter(function(f
   if(b.due)card.appendChild(h('div',{class:'ccb__due'+(dd!==null&&dd<=3?' is-hot':''),text:'기한 '+s4DateK(b.due)+(dd===null?'':' · '+(dd<0?(-dd)+'일 지남':dd===0?'오늘까지':dd+'일 남음'))}));
   if(!ex){card.appendChild(h('div',{class:'ccb__brief',text:ccOne(b.docs)||ccOne(b.desc)}));
     card.appendChild(h('button',{class:'ccb__row ccb__more',type:'button','data-ccbxmore':b.id,'aria-expanded':'false',onclick:function(){K.bxOpen[b.id]=true;drawClientCk()}},h('span',{text:'열어서 보내기'}),h('span',{'aria-hidden':'true',text:'›'})));return card}
-  if(b.docs||b.desc)card.appendChild(h('div',{class:'ccb__docs'},h('span',{class:'ccb__dh',text:'보내 주실 서류'}),h('span',{class:'ccb__dt',text:[b.docs,b.desc].filter(Boolean).join('\n\n')})));
+  if(b.docs||b.desc){var dl=String(b.docs||'').split('\n').map(function(x){return x.replace(/^[\s·•\-*]+/,'').trim()}).filter(Boolean),dc=h('div',{class:'ccb__docs'},h('span',{class:'ccb__dh',text:'보내 주실 서류'}));
+    if(dl.length)dc.appendChild(h('ul',{class:'ccb__dt'},dl.map(function(x){return h('li',{text:x})})));if(b.desc)dc.appendChild(h('p',{class:'ccb__dd',text:String(b.desc)}));card.appendChild(dc)}
   if(office.length){var ol=h('div',{class:'ccb__f'});office.forEach(function(f){var a=h('a',{class:'ccb__row',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',onclick:function(){if(K.key)markGot({viewer:'client',key:K.key},f)}},h('span',{class:'ccb__n',text:f.name||'파일'}),h('span',{class:'ccb__dl',text:'내려받기'}));pvAttrs(a,f,'',f.at);ol.appendChild(a)});
     card.appendChild(h('div',null,h('div',{class:'ccb__lab',text:'사무소에서 보낸 파일'}),ol))}
   if(mine.length){var ml=h('div',{class:'ccb__f'});mine.forEach(function(f){ml.appendChild(h('div',{class:'ccb__row'},h('a',{class:'ccb__n',href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener',text:f.name||'파일'}),h('span',{class:'ccb__at',text:fmtDate(f.at||0).slice(5)}),
       canUp?h('button',{class:'ccb__x',type:'button','aria-label':'보낸 파일 지우기: '+(f.name||''),text:'지우기',onclick:function(){dropTrackFile(K.key,f,nt)}}):null))});
-    card.appendChild(h('div',null,h('div',{class:'ccb__lab',text:'내가 보낸 파일 '+mine.length}),ml))}
+    card.appendChild(h('div',null,h('div',{class:'ccb__lab'},'내가 보낸 파일 ',h('span',{class:'ccb__cnt',text:String(mine.length)})),ml))}
   if(canUp){card.appendChild(ccUpBtns(function(a){sendFiles(K.key,a,'client',nt,K.caseId,{bx:b.id,bxT:String(b.name).slice(0,60)})},{id:b.id,label:'사진 찍기 · 파일 올리기'}));
 }
   else card.appendChild(h('span',{class:'ccb__hint',text:'지금은 이 화면에서 파일을 올릴 수 없습니다. 담당자에게 문의해 주세요.'}));
