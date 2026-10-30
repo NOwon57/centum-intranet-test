@@ -4901,6 +4901,15 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .cctodo__ar{font-size:22px;line-height:1;color:var(--muted)}
 .cc__sh{margin:26px 0 0;font-size:16px;font-weight:800}
 .cc__sh+.trk{margin-top:16px}
+/* v206: 점은 테두리까지 16px(가운데 8px)이라 선(2px, top 7px)이 정확히 가운데 · 의뢰인 진행 단계는 휴대폰에서도 가로 */
+.trk li::before{box-sizing:border-box}
+#ccStatus .trk{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin:16px 0 8px}
+#ccStatus .trk li{padding:28px 4px 0;text-align:center}
+#ccStatus .trk li::before{left:calc(50% - 8px)}
+#ccStatus .trk li::after{top:7px;bottom:auto;left:calc(50% + 8px);right:calc(-50% + 8px);width:auto;height:2px}
+#ccStatus .trk b{font-size:15px;line-height:1.35;word-break:keep-all;overflow-wrap:normal}
+#ccStatus .trk span{display:block;margin-top:3px;font-size:12px;line-height:1.4;white-space:pre-line}
+#ccStatus .trk+.cctodo{margin-top:22px}
 /* 서류 상자: 더 크게, 안내문은 굵게 */
 /* v205: 한눈에 들어오게 컴팩트 — 서류는 점 목록, 보낸 파일은 한 상자 안 줄 목록 */
 .ccb{padding:14px 16px;gap:10px;margin-top:12px}
@@ -4936,6 +4945,8 @@ a.ccb__row:hover,.ccb__more:hover{border-color:var(--apricot-deep)}
 .ccup__b{min-height:48px;font-size:15px}
 @media (max-width:720px){
   .cctodo{margin:16px -4px 4px;padding:14px 12px}
+  #ccStatus .trk b{font-size:13.5px}
+  #ccStatus .trk span{font-size:11.5px}
   .cctodo__p{padding:8px 12px}
   .ccb{padding:13px 13px}
   .ccb.is-open{padding:12px 12px}
@@ -14250,12 +14261,12 @@ function renderTrack(t){
   $('#ccName').textContent=(t.name||'의뢰인')+' 님의 진행 상황';
   var trk=h('ol',{class:'trk'+(typeof t.st4==='number'?'':typeof t.step==='number'?' trk--5':''),'aria-label':'진행 단계'});
   if(typeof t.st4==='number'){var k4=t.st4,nm4=Array.isArray(t.st4n)?t.st4n:['서류 준비','채무·재산 확인','법원 절차','인가 완료'],pw4={};(t.history||[]).forEach(function(x){if(typeof x.s4==='number'&&!pw4[x.s4])pw4[x.s4]=x.at});
-    for(var q4=1;q4<=4;q4++)trk.appendChild(h('li',{class:q4<k4||k4===4?'done':q4===k4?'now':'todo'},h('b',{text:String(nm4[q4-1]||'')}),h('span',{text:q4===k4&&k4<4?'진행 중'+(pw4[q4]?' · '+fmtDate(pw4[q4])+'부터':''):q4<k4&&pw4[q4]?fmtDate(pw4[q4]):q4<=k4?'완료':'예정'})))}
+    for(var q4=1;q4<=4;q4++)trk.appendChild(h('li',{class:q4<k4||k4===4?'done':q4===k4?'now':'todo'},h('b',{text:String(nm4[q4-1]||'')}),h('span',{text:q4===k4&&k4<4?'진행 중'+(pw4[q4]?'\n'+fmtDate(pw4[q4]).slice(5)+'부터':''):q4<k4&&pw4[q4]?'완료\n'+fmtDate(pw4[q4]).slice(5):q4<=k4?'완료':'예정'})))}
   else if(typeof t.step==='number'){var ph=typeof t.phase==='number'?t.phase:4,pw={};(t.history||[]).forEach(function(x){if(typeof x.t==='number'){var p=x.t>=17?4:ST16[x.t].ph;if(!pw[p])pw[p]=x.at}});
     PHASES.forEach(function(nm,i){trk.appendChild(h('li',{class:i<ph||ph===4?'done':i===ph?'now':'todo'},h('b',{text:nm}),
-      h('span',{text:i===ph&&ph<4?'진행 중'+(pw[i]?' · '+fmtDate(pw[i])+'부터':''):i<ph&&pw[i]?fmtDate(pw[i]):i<=ph?'완료':'예정'})))})}
+      h('span',{text:i===ph&&ph<4?'진행 중'+(pw[i]?'\n'+fmtDate(pw[i]).slice(5)+'부터':''):i<ph&&pw[i]?'완료\n'+fmtDate(pw[i]).slice(5):i<=ph?'완료':'예정'})))})}
   else STAGES.forEach(function(nm,i){trk.appendChild(h('li',{class:i<st||st===3?'done':i===st?'now':'todo'},h('b',{text:nm}),
-    h('span',{text:i===st&&st<3?'진행 중'+(when[i]?' · '+fmtDate(when[i])+'부터':''):i<=st&&when[i]?fmtDate(when[i]):i<=st?'완료':'예정'})))});
+    h('span',{text:i===st&&st<3?'진행 중'+(when[i]?'\n'+fmtDate(when[i]).slice(5)+'부터':''):i<=st&&when[i]?'완료\n'+fmtDate(when[i]).slice(5):i<=st?'완료':'예정'})))});
   var info=h('dl',{class:'info',style:'margin-top:24px'});
   if(t.owner)info.appendChild(h('div',null,h('dt',{text:'담당자'}),h('dd',{text:t.owner})));
   info.appendChild(h('div',null,h('dt',{text:'최근 변경'}),h('dd',{text:fmtDate(t.updatedAt||Date.now())+' '+fmtTime(t.updatedAt||Date.now())})));
@@ -14263,7 +14274,7 @@ function renderTrack(t){
   info.appendChild(h('div',null,h('dt',{text:'문의'}),h('dd',null,telA(),' (평일 09:00 – 18:00)')));
   var box=$('#ccStatus');box.textContent='';
   box.appendChild(h('span',{class:'case__type',text:(t.type||'개인회생 신청')+(t.code?' · 접수번호 '+t.code:'')}));box.appendChild(h('h2',{text:t.title||''}));
-  box.appendChild(h('div',{class:'cctodo',id:'ccTodo'}));box.appendChild(h('h3',{class:'cc__sh',text:'진행 단계'}));box.appendChild(trk);
+  box.appendChild(h('h3',{class:'cc__sh',text:'진행 단계'}));box.appendChild(trk);box.appendChild(h('div',{class:'cctodo',id:'ccTodo'}));
   var needBox=null, /* v152: 「서류」 탭과 함께 없앰. 보낼 서류는 「보내 주실 서류」 카드(진행 단계 공유 항목)로 */
     dateBox=Array.isArray(t.dates)&&t.dates.length?h('div',{class:'cc__need',id:'ccDates'},h('b',{text:'다음 일정'}),h('ul',null,t.dates.slice(0,6).map(function(x){return h('li',{text:String(x.t||'')+' · '+String(x.d||'').replace(/-/g,'.')})}))):null;
   /* v199: 「현재 단계」 설명 상자와 「다음 일정」은 뺌 — 할 일은 맨 위 「지금 보내 주실 서류」에서 */
