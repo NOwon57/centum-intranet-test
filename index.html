@@ -250,7 +250,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
      서버 함수 trk_read · trk_write(자기 조회 키 아래만)와 trk-file(파일)로만 다룬다. 실시간 대신 2초마다 다시 받는다(화면이 보일 때만). */
   var CLIENT = /^#(mypage|t=[0-9a-f]{40})$/.test(location.hash || '');
   /* 로그인 안 한 방문자는 홈페이지부터 본다(v208). 인트라넷 주소(#intranet, #go/…)로 왔거나 「인트라넷」을 누르면 로그인 화면 */
-  var PUBLIC = false;
+  var PUBLIC = false, LIBFAIL = false;
   function staffHash() { var hh = location.hash || ''; return hh === '#intranet' || /#go\//.test(hh); }
   var CK = null; /* 지금 보고 있는 조회 키 */
   var TRK = /^track\/([0-9a-f]{40})\/(.+)$/;
@@ -407,7 +407,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
         '<button class="sbx-link sbx-home" type="button" id="sbxHome">← 홈페이지로 돌아가기</button>' +
         '<p class="sbx-warn">시험용 서버입니다. 실제 의뢰인 자료는 넣지 마세요.</p></div>';
       document.body.appendChild(gate);
-      gate.querySelector('#sbxSwap').addEventListener('click', function () { showGate(gate.dataset.mode === 'in' ? 'up' : 'in'); });
+      gate.querySelector('#sbxSwap').addEventListener('click', function () { showGate(gate.dataset.mode === 'in' ? 'up' : 'in'); if (LIBFAIL) gateMsg(LIBMSG, true); });
       gate.querySelector('#sbxForm').addEventListener('submit', onSubmit);
       gate.querySelector('#sbxHome').addEventListener('click', hideGate);
       gate.addEventListener('keydown', function (e) { if (e.key === 'Escape' && PUBLIC) hideGate(); });
@@ -430,6 +430,9 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
     var a = document.querySelector('a[data-view="site"]'); if (a) a.click();
   }
+  var LIBMSG = '필요한 프로그램을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로 고쳐 주세요.';
+  /* 로그인 전 로그인 화면 열기: 연결 프로그램을 못 불러왔으면 그 안내를 함께(홈페이지는 그대로 볼 수 있음) */
+  function gateIn() { showGate('in'); if (LIBFAIL) { gateMsg(LIBMSG, true); gate.querySelector('#sbxGo').disabled = true; } }
   function publicHome() {
     PUBLIC = true; readyRes();
     document.addEventListener('click', function (e) {
@@ -439,10 +442,10 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
         try { history.replaceState(null, '', location.pathname + location.search + '#mypage'); } catch (x) {} location.reload(); return;
       }
       try { history.replaceState(null, '', location.pathname + location.search + '#intranet'); } catch (x) {} /* 로그인하면 인트라넷으로 다시 열림 */
-      showGate('in');
+      gateIn();
     }, true);
-    window.addEventListener('hashchange', function () { if (PUBLIC && staffHash()) showGate('in'); });
-    if (staffHash()) showGate('in');
+    window.addEventListener('hashchange', function () { if (PUBLIC && staffHash()) gateIn(); });
+    if (staffHash()) gateIn();
   }
   var busy = false;
   async function onSubmit(e) {
@@ -521,7 +524,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
   }
   async function boot() {
     if (CLIENT) { bootClientMode(); return; }
-    try { if (!window.supabase) await loadScript(CFG.lib); } catch (e) { fatal('필요한 프로그램을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로 고쳐 주세요.'); return; }
+    try { if (!window.supabase) await loadScript(CFG.lib); } catch (e) { LIBFAIL = true; publicHome(); return; } /* 못 불러와도 홈페이지는 보이게(v208) */
     sb = window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'centum-sbx-auth' } });
     var s = (await sb.auth.getSession()).data.session;
     if (!s) { publicHome(); return; }
@@ -537,7 +540,6 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
     readyRes();
     var tries = 0, t = setInterval(function () { acctUi(); if (document.getElementById('sbxAcct') || ++tries > 60) clearInterval(t); }, 500);
   }
-  function fatal(t) { showGate('in'); gateMsg(t, true); gate.querySelector('#sbxGo').disabled = true; }
   window.__sbx = { get client() { return sb; }, get uid() { return UID; }, get owner() { return OWNER; }, get mode() { return CLIENT ? 'client' : 'staff'; }, get key() { return CK; }, resync: resyncAll };
   boot();
 })();
