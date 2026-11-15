@@ -40,6 +40,8 @@ html.sbx-locked,html.sbx-locked body{overflow:hidden}
 html.sbx-client #client .intra__top a.btn[data-view="site"]{display:none}
 html.sbx-client #client .intra__top a.brand[data-view="site"]{pointer-events:none}
 html.sbx-client #site,html.sbx-client #intra{display:none!important}
+.sbx-home{color:#6b625a;font-weight:500;text-decoration:none;margin-top:8px}
+.sbx-home[hidden]{display:none}
 </style></head><body><script>window.__SBX={"url": "https://tgnzmwvfvackjldwngxn.supabase.co", "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnbnptd3ZmdmFja2psZHduZ3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzY1NDEsImV4cCI6MjEwODI1MjU0MX0.YgpXVAHXFibMACKUxGV6UegoZMvTFwSFma_xkdjYHQU", "base": "/centum-intranet-test/", "trkFn": "swift-endpoint", "lib": ["/centum-intranet-test/fake-supabase.js"]};</script><script>/* ═══ 센텀 인트라넷 · Supabase 시험 서버 연결 부품 ═══
    인트라넷 화면은 Claude 아티팩트 저장소(window.claude.use('db'|'user'|'assets'|'downloads'))를 부르도록 만들어져 있다.
    이 파일은 같은 모양의 함수를 Supabase(서울)로 이어 준다. 화면 코드는 그대로 둔다.
@@ -247,6 +249,9 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
      주소가 #mypage 또는 #t=<조회 키>이면 이 모드로 연다. 의뢰인은 표(docs)를 직접 못 읽고 쓰며,
      서버 함수 trk_read · trk_write(자기 조회 키 아래만)와 trk-file(파일)로만 다룬다. 실시간 대신 2초마다 다시 받는다(화면이 보일 때만). */
   var CLIENT = /^#(mypage|t=[0-9a-f]{40})$/.test(location.hash || '');
+  /* 로그인 안 한 방문자는 홈페이지부터 본다(v208). 인트라넷 주소(#intranet, #go/…)로 왔거나 「인트라넷」을 누르면 로그인 화면 */
+  var PUBLIC = false;
+  function staffHash() { var hh = location.hash || ''; return hh === '#intranet' || /#go\//.test(hh); }
   var CK = null; /* 지금 보고 있는 조회 키 */
   var TRK = /^track\/([0-9a-f]{40})\/(.+)$/;
   var cc = Object.create(null), cw = new Set(), cTimer = 0;
@@ -362,6 +367,7 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
     use: async function (n) {
       if (n === 'sample') return null; /* AI는 시험 서버에서 꺼 둠 */
       await READY;
+      if (PUBLIC) return null; /* 로그인 전 홈페이지: 사무소 자료는 읽지 않는다(상담 신청 등은 전화 안내로) */
       return (CLIENT ? { db: cdb, user: cuser, assets: cassets, downloads: downloads } : { db: db, user: user, assets: assets, downloads: downloads })[n] || null;
     }
   };
@@ -398,11 +404,15 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
         '<div class="sbx-note" role="status" hidden></div>' +
         '<button class="sbx-btn" type="submit" id="sbxGo"></button></form>' +
         '<button class="sbx-link" type="button" id="sbxSwap"></button>' +
+        '<button class="sbx-link sbx-home" type="button" id="sbxHome">← 홈페이지로 돌아가기</button>' +
         '<p class="sbx-warn">시험용 서버입니다. 실제 의뢰인 자료는 넣지 마세요.</p></div>';
       document.body.appendChild(gate);
       gate.querySelector('#sbxSwap').addEventListener('click', function () { showGate(gate.dataset.mode === 'in' ? 'up' : 'in'); });
       gate.querySelector('#sbxForm').addEventListener('submit', onSubmit);
+      gate.querySelector('#sbxHome').addEventListener('click', hideGate);
+      gate.addEventListener('keydown', function (e) { if (e.key === 'Escape' && PUBLIC) hideGate(); });
     }
+    gate.querySelector('#sbxHome').hidden = !PUBLIC;
     gate.dataset.mode = mode; gate.hidden = false; document.documentElement.classList.add('sbx-locked');
     var up = mode === 'up';
     gate.querySelector('#sbxT').textContent = up ? '가입하기' : '로그인';
@@ -412,6 +422,27 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
     gate.querySelector('#sbxPw').setAttribute('autocomplete', up ? 'new-password' : 'current-password');
     [].forEach.call(gate.querySelectorAll('.sbx-su'), function (x) { x.hidden = !up; });
     gateMsg(''); setTimeout(function () { var a = document.activeElement, i = gate.querySelector('#sbxId'); if (i && !(a && a.tagName === 'INPUT' && gate.contains(a))) i.focus(); }, 30); /* 이미 고른 칸의 커서는 빼앗지 않음 */
+  }
+  /* 로그인 화면을 닫고 홈페이지로(로그인 전에만) */
+  function hideGate() {
+    if (!gate || !PUBLIC) return;
+    gate.hidden = true; document.documentElement.classList.remove('sbx-locked');
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    var a = document.querySelector('a[data-view="site"]'); if (a) a.click();
+  }
+  function publicHome() {
+    PUBLIC = true; readyRes();
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-view="intra"],a[data-view="client"]'); if (!a || !PUBLIC) return;
+      e.preventDefault(); e.stopPropagation();
+      if (a.dataset.view === 'client') { /* 진행 조회는 로그인 없이 쓰는 의뢰인 모드로 다시 연다 */
+        try { history.replaceState(null, '', location.pathname + location.search + '#mypage'); } catch (x) {} location.reload(); return;
+      }
+      try { history.replaceState(null, '', location.pathname + location.search + '#intranet'); } catch (x) {} /* 로그인하면 인트라넷으로 다시 열림 */
+      showGate('in');
+    }, true);
+    window.addEventListener('hashchange', function () { if (PUBLIC && staffHash()) showGate('in'); });
+    if (staffHash()) showGate('in');
   }
   var busy = false;
   async function onSubmit(e) {
@@ -490,11 +521,10 @@ html.sbx-client #site,html.sbx-client #intra{display:none!important}
   }
   async function boot() {
     if (CLIENT) { bootClientMode(); return; }
-    if (!location.hash || location.hash === '#' || location.hash === '#top') { try { history.replaceState(null, '', location.pathname + location.search + '#intranet'); } catch (e) {} }
     try { if (!window.supabase) await loadScript(CFG.lib); } catch (e) { fatal('필요한 프로그램을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로 고쳐 주세요.'); return; }
     sb = window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'centum-sbx-auth' } });
     var s = (await sb.auth.getSession()).data.session;
-    if (!s) { showGate('in'); return; }
+    if (!s) { publicHome(); return; }
     TOKEN = s.access_token; UID = s.user.id;
     sb.auth.onAuthStateChange(function (ev, ss) { TOKEN = ss ? ss.access_token : null; swPost({ type: 'token', token: TOKEN }); if (ss && sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(ss.access_token); if (ev === 'SIGNED_OUT') location.reload(); });
     var pr = await sb.from('profiles').select('id,name,login').eq('id', UID).maybeSingle();
