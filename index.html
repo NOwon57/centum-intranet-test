@@ -2482,6 +2482,34 @@ div>.acc{border-top:0;padding-top:2px}
 .shc .inp{min-height:38px;padding:6px 10px;font-size:calc(14px + var(--fzs))}
 .shc textarea.inp{min-height:104px;line-height:1.6;resize:vertical}
 .sh__num{text-align:right;font-variant-numeric:tabular-nums}
+/* v211 채무·재산·소득: 세 칸 줄 · 가구원 수 · 개월 단추 · 접는 칸 */
+.shg--3{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
+.shg--3>.field{justify-content:flex-start}
+.shg--3 select.inp+.inp{margin-top:8px}
+.sha{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:4px 6px 4px 10px;border:1px solid var(--line);background:#f6f8fb}
+.sha b{font-size:calc(14.5px + var(--fzm));font-variant-numeric:tabular-nums}
+.sha__b{min-height:28px;padding:0 6px;border:0;background:none;font:inherit;font-size:calc(12.5px + var(--fzs));color:var(--muted);white-space:nowrap;cursor:pointer}
+.sha__b:hover{color:var(--ink)}
+.shm,.shq{display:flex;flex-wrap:wrap;gap:6px}
+.shm{margin-top:8px}.shq{margin:0 0 8px}
+.shm__b{min-height:30px;padding:0 12px;border:1px solid #d9cfc5;border-radius:999px;background:var(--paper);font:inherit;font-size:calc(13px + var(--fzs));color:var(--ink-2);cursor:pointer}
+.shm__b:hover{border-color:var(--ink-2)}
+.shm__b[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--on-ink);font-weight:700}
+.shf{border:1px solid var(--line);background:#fcfaf6;margin-top:12px;min-width:0}
+.shs>.shf{margin-top:0}
+.shf__h{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:8px 14px;border:0;background:none;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.shf__h b{font-size:calc(14.5px + var(--fzm));font-weight:700;letter-spacing:-.02em}
+.shf__ck{flex:none;width:18px;height:18px;border:1.5px solid #c9bba6;border-radius:4px;background:var(--paper);display:grid;place-items:center}
+.shf.is-open .shf__ck{background:var(--apricot-deep);border-color:var(--apricot-deep)}
+.shf.is-open .shf__ck::after{content:'';width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.shf__s{font-size:calc(13px + var(--fzs));color:var(--muted)}
+.shf__tg{margin-left:auto;font-size:calc(12.5px + var(--fzs));font-weight:700;color:var(--apricot-deep);white-space:nowrap}
+.shf__b{padding:2px 14px 14px}
+.shf__b .inp{min-height:38px;padding:6px 10px;font-size:calc(14px + var(--fzs))}
+.shf__b textarea.inp{min-height:104px;line-height:1.6;resize:vertical}
+.shf__b .shg{align-items:end}.shf__b input.inp,.shf__b select.inp{height:40px}
+@media (max-width:900px){.shg--3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.shf__h{flex-wrap:wrap;gap:6px 10px}.shf__h b{flex:1 1 60%}.shf__s{order:3}}
 .sh__who{font-size:calc(13.5px + var(--fzs));color:var(--ink-2);margin:-2px 0 12px;overflow-wrap:anywhere}
 .sh__sum{display:flex;justify-content:space-between;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:calc(14px + var(--fzs))}
 .sh__sum b{font-variant-numeric:tabular-nums}
@@ -3316,6 +3344,49 @@ mark.fhit.fhit--cur{background:var(--apricot);box-shadow:0 0 0 2px var(--apricot
 .mm__fab:hover{transform:scale(1.06);box-shadow:0 14px 30px -10px rgba(21,18,15,.6)}
 .mm__fab:active{transform:scale(.96)}
 .mm__fab:focus-visible{outline:3px solid var(--apricot);outline-offset:3px}
+/* v211 미니 캘린더: 메신저 아이콘 위 단추 · 달력 | 그날 할 일 */
+.mm__fab.mm__fab--cal{bottom:calc(var(--mm-b) + 68px);background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink),0 10px 24px -12px rgba(21,18,15,.5)}
+.mm__fab.mm__fab--cal:hover{box-shadow:inset 0 0 0 1.5px var(--ink),0 14px 30px -12px rgba(21,18,15,.6)}
+.mm__fab.mm__fab--cal[aria-expanded="true"]{background:var(--ink);color:var(--on-ink)}
+.mm--open .mc,.mm--kb .mc,.mm--kb .mm__fab--cal{display:none}
+.mc{position:fixed;right:92px;bottom:var(--mm-b);z-index:61;display:grid;grid-template-columns:272px minmax(0,1fr);width:min(660px,calc(100vw - 116px));height:min(380px,calc(100vh - 120px));background:var(--paper);border:1px solid var(--ink);box-shadow:0 24px 60px -24px rgba(21,18,15,.6)}
+.mc[hidden]{display:none}
+.mc__cal{padding:14px;border-right:1px solid var(--line);min-width:0}
+.mc__todo{display:flex;flex-direction:column;min-width:0;min-height:0;padding:14px}
+.mc__hd{display:flex;align-items:center;gap:8px;min-height:32px;margin-bottom:10px}
+.mc__hd b{font-size:calc(15px + var(--fzm));font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.mc__cal .mc__hd b{flex:1;text-align:center}
+.mc__nb{min-width:32px;height:32px;padding:0;border:1px solid var(--line);background:var(--paper);font:inherit;font-size:calc(15px + var(--fzm));line-height:1;color:var(--ink);cursor:pointer}
+.mc__tb{padding:0 10px;font-size:calc(12.5px + var(--fzs))}
+.mc__nb:hover{border-color:var(--ink)}
+.mc__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.mc__w{text-align:center;font-size:calc(11.5px + var(--fzs));color:var(--muted);padding:2px 0 4px}
+.mc__d{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:36px;padding:0;border:1px solid transparent;background:none;font:inherit;font-size:calc(13px + var(--fzs));font-variant-numeric:tabular-nums;color:var(--ink);cursor:pointer}
+.mc__w.is-sun,.mc__d.is-sun{color:#b3402a}
+.mc__d:hover{border-color:#d9cfc5}
+.mc__d.is-out{color:#b5aca3}
+.mc__d.is-today{font-weight:700;box-shadow:inset 0 0 0 1.5px var(--apricot-deep)}
+.mc__d.is-sel{background:var(--ink);color:var(--on-ink)}
+.mc__d:focus-visible{outline:2px solid var(--apricot);outline-offset:1px}
+.mc__dots{display:flex;gap:2px;height:4px}
+.mc__dot{width:4px;height:4px;border-radius:50%;background:#8c8279}
+.mc__dot--f{background:#c0392b}.mc__dot--c{background:var(--apricot-deep)}.mc__dot--w{background:#27457a}
+.mc__d.is-sel .mc__dot{box-shadow:0 0 0 1px rgba(255,255,255,.75)}
+.mc__n{font-size:calc(12.5px + var(--fzs));font-weight:700;color:var(--apricot-deep)}
+.mc__sub{font-size:calc(12.5px + var(--fzs));color:var(--muted);white-space:nowrap}
+.mc__todo .mm__ib{margin-left:auto}
+.mc__list{list-style:none;margin:0;padding:0;display:grid;gap:6px;align-content:start;overflow:auto;flex:1;min-height:0}
+.mc__it{display:flex;gap:10px;align-items:flex-start;width:100%;padding:8px 10px;border:1px solid var(--line);background:var(--paper);font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.mc__it:hover{border-color:var(--ink-2)}
+.mc__it.is-fx{box-shadow:inset 3px 0 0 #c0392b}
+.mc__t{flex:none;width:42px;padding-top:2px;font-size:calc(12.5px + var(--fzs));color:var(--muted);font-variant-numeric:tabular-nums}
+.mc__b{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+.mc__b b{font-size:calc(13.5px + var(--fzs));font-weight:600;overflow-wrap:anywhere}
+.mc__none{font-size:calc(13px + var(--fzs));color:var(--muted);padding:16px 4px}
+.mc__all{align-self:flex-start;margin-top:10px;padding:4px 0;border:0;background:none;font:inherit;font-size:calc(12.5px + var(--fzs));color:var(--apricot-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+@media (min-width:1300px){body.is-tab-ws .mc{right:auto;left:92px}}
+@media (max-width:640px){.mc{left:0;right:0;bottom:0;width:auto;height:auto;max-height:86vh;grid-template-columns:minmax(0,1fr);overflow:auto;border-width:1px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.mc__cal{border-right:0;border-bottom:1px solid var(--line)}.mc__list{overflow:visible;flex:none}}
 .mm__fi{display:grid;place-items:center}
 .mm__fab--me{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--apricot-deep),0 10px 24px -10px rgba(21,18,15,.55)}
 .mm__fn{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:var(--apricot);color:var(--ink);font-size:calc(12px + var(--fzs));font-weight:700;display:grid;place-items:center;white-space:nowrap;box-shadow:0 0 0 2px #fff;font-variant-numeric:tabular-nums}
@@ -9635,7 +9706,10 @@ var SH_MONEY=['unsecured','secured','priorityDebt','realestate','deposit','cash'
     SH_TEXT={job:60,court:40,caseNo:40,manager:30,cause:1500,avoidance:1500,reviewMemo:3000},
     SH_DATE=['birth','consultDate'],
     SH_CHK=[['cIncome','계속적·반복적 소득 소명 가능'],['cDebt','채무한도 검토 완료'],['cCreditor','누락 채권자 확인'],['cAsset','재산/배우자 관련 재산 검토'],['cAvoid','최근 처분·증여·편파변제 검토'],['cTax','세금·4대보험·우선권채권 확인'],['cLease','임대차보증금/면제재산 검토'],['cInsurance','보험·퇴직금·차량 확인'],['cFeasible','변제수행 가능성 검토']],
-    SH_SECS=[['basic','상담 기초'],['fin','채무·재산·소득'],['calc','변제계획'],['review','전문 검토']],SH_MAX=999999999999;
+    SH_SECS=[['basic','상담 기초'],['fin','채무·재산·소득'],['calc','변제계획'],['review','전문 검토']],SH_MAX=999999999999,
+    /* 기준 생계비: 2026년 기준 중위소득의 60%(1~6인 가구, 보건복지부 고시). 해가 바뀌면 이 줄만 고친다 */
+    SH_LIVING_Y=2026,SH_LIVING=[1538543,2519575,3215422,3896843,4534031,5133571],
+    SH_CAUSE=['생활비','사업 실패','주식·코인 손실','보증','질병·치료비','이혼','사기 피해','실직·소득 감소','자녀 교육비'],SH_ADJ=['secured','priorityDebt','extraLiving','otherDeduct','manualPay','lumpSum'];
 /* 저장된 값을 화면에 쓸 수 있는 모양으로 다듬는다(없거나 이상한 값은 기본값) */
 function shOf(raw){var r=obj(raw),o={};
   SH_MONEY.forEach(function(k){var v=r[k];o[k]=typeof v==='number'&&isFinite(v)&&v>0?Math.min(Math.round(v),SH_MAX):0});
@@ -9673,27 +9747,49 @@ function sheetMount(box,o){
   function card(title,cls){var c=h('section',{class:'shc'+(cls?' '+cls:'')},h('h4',{text:title}));for(var i=2;i<arguments.length;i++)if(arguments[i])c.appendChild(arguments[i]);return c}
   function grid(cls){var g=h('div',{class:'shg'+(cls?' '+cls:'')});for(var i=1;i<arguments.length;i++)if(arguments[i])g.appendChild(arguments[i]);return g}
   function outEl(k,tag){return out[k]=h(tag||'b',{text:'0원'})}
+  /* 접는 칸(v211): 머리(체크 모양 · 제목 · 요약 · 열기/닫기)를 누르면 펼친다. 값이 있으면 처음부터 펼쳐 둔다 */
+  var folds=[];
+  function fold(key,title,sumFn,hasFn){var body=h('div',{class:'shf__b',id:o.pre+'f-'+key}),sm=h('span',{class:'shf__s'}),tg=h('span',{class:'shf__tg'}),
+      hd=h('button',{class:'shf__h',type:'button','data-fold':key,'aria-expanded':'false','aria-controls':body.id},h('span',{class:'shf__ck','aria-hidden':'true'}),h('b',{text:title}),sm,tg),w=h('div',{class:'shf','data-foldbox':key},hd,body),f;
+    for(var i=4;i<arguments.length;i++)if(arguments[i])body.appendChild(arguments[i]);
+    f={key:key,el:w,open:false,user:false,has:hasFn,set:function(on){f.open=!!on;body.hidden=!on;hd.setAttribute('aria-expanded',on?'true':'false');tg.textContent=on?'닫기 ▴':'열기 ▾';w.classList.toggle('is-open',!!on)},draw:function(v,c){sm.textContent=sumFn(v,c)}};
+    hd.addEventListener('click',function(){f.user=true;f.set(!f.open);foldBtn()});f.set(false);folds.push(f);return f}
   /* ① 상담 기초 */
   who=h('p',{class:'sh__who'});
   secEl.basic=h('div',{class:'shs'},
-    card('채무자 기본사항','',who,grid('',date('birth','생년월일'),text('job','직업/근무처'),sel('incomeType','소득형태'),num('dependents','부양가족 수'))),
-    card('절차·사건 정보','',grid('',o.ci?ciMirror():text('court','관할법원','예) 부산회생법원'),o.ci?null:text('caseNo','사건번호','접수 후 입력'),date('consultDate','상담일'),text('manager','상담 담당자'),sel('prior','과거 회생/파산'),sel('proc','절차 진행상태'))),
-    card('채무발생 경위 및 특이사항','shc--full',grid('',area('cause','주요 채무발생 원인','생활비, 사업실패, 투자, 보증, 질병, 이혼 등'),area('avoidance','최근 재산처분·편파변제·무상이체 등','부인권/청산가치 반영 가능성을 검토할 사항'))));
-  /* ② 채무·재산·소득 */
-  secEl.fin=h('div',{class:'shs shs--3'},
-    card('채무','',grid('',money('unsecured','무담보 원금'),money('secured','담보채무'),money('priorityDebt','우선권 채권 등'),num('creditors','채권자 수'))),
-    card('재산 / 청산가치','',grid('',money('realestate','부동산 순가치'),money('deposit','임차보증금 순가치'),money('cash','예금·현금'),money('insurance','보험 해약환급금'),money('car','차량 순가치'),money('retirement','퇴직금 반영액'),money('otherAsset','기타재산'),money('avoidanceValue','부인권 등 추가 청산가치')),
-      h('div',{class:'sh__sum'},h('span',{text:'총 청산가치'}),outEl('liq1'))),
-    card('월 소득 / 생계비','',grid('',money('monthlyIncome','월 평균 실수령 소득'),money('living','기준 생계비'),money('extraLiving','추가 생계비'),money('otherDeduct','기타 공제/조정')),
-      h('div',{class:'sh__sum'},h('span',{text:'월 가용소득'}),outEl('disp1')),h('p',{class:'sh__hint',text:'가용소득 = 월 소득 − 기준 생계비 − 추가 생계비 − 기타 공제/조정'})));
+    card('상담 기초','shc--full',who,grid('shg--4',date('consultDate','상담일'),text('job','직업/근무처'),sel('incomeType','소득형태'),sel('prior','과거 회생/파산')),
+      h('p',{class:'sh__hint',text:'소득·채무·재산, 채무 원인, 생년월일·부양가족·관할법원·담당자는 「채무·재산·소득」에 적습니다.'})));
+  /* ② 채무·재산·소득 — 소득·채무·재산 한 묶음 + 채무 원인·특이사항 + 사건 정보 */
+  var hh=h('select',{class:'inp','data-hh':'1','aria-label':'가구원 수로 기준 생계비 넣기'},h('option',{value:'',text:'가구원 수 선택 ('+SH_LIVING_Y+'년 기준)'}));
+  SH_LIVING.forEach(function(a,i){hh.appendChild(h('option',{value:String(a),text:(i+1)+'인 가구 · '+a.toLocaleString('ko-KR')+'원'}))});
+  var livF=money('living','기준 생계비');livF.insertBefore(hh,els.living);
+  var moF=num('months','변제기간(개월)'),moC=h('div',{class:'shm',role:'group','aria-label':'변제기간 빠른 선택'});[36,48,60].forEach(function(m){moC.appendChild(h('button',{type:'button',class:'shm__b','data-mo':String(m),'aria-pressed':'false',text:m+'개월'}))});moF.appendChild(moC);
+  var asBtn=h('button',{type:'button',class:'sha__b','data-act':'asset'}),asF=h('div',{class:'field'},h('span',{class:'lb',text:'재산 합계 (청산가치)'}),h('div',{class:'sha'},outEl('liq1'),asBtn));
+  var fAsset=fold('asset','재산 내역',function(v,c){return '합계 '+wonFull(c.liq)},function(v){return SH_ASSET.some(function(k){return v[k]>0})},
+      grid('shg--4',money('realestate','부동산 순가치'),money('deposit','임차보증금 순가치'),money('cash','예금·현금'),money('insurance','보험 해약환급금'),money('car','차량 순가치'),money('retirement','퇴직금 반영액'),money('otherAsset','기타재산'),money('avoidanceValue','부인권 등 추가 청산가치')));
+  function adjN(v){return SH_ADJ.filter(function(k){return v[k]>0}).length+(v.rateBase!=='unsecured'?1:0)}
+  var fAdj=fold('adj','추가 조정 — 담보·우선권·추가 생계비·월 변제금 직접 조정',function(v){var n=adjN(v);return n?n+'개 입력':'없음'},function(v){return adjN(v)>0},
+      grid('shg--4',money('secured','담보채무'),money('priorityDebt','우선권 채권 등'),money('extraLiving','추가 생계비'),money('otherDeduct','기타 공제/조정'),money('manualPay','월 변제금 직접 조정'),money('lumpSum','일시변제·압류적립금 등 추가 투입액'),sel('rateBase','변제율 계산 기준')),
+      h('div',{class:'sh__act'},h('button',{class:'btn btn--sm',type:'button','data-act':'need',text:'청산가치 충족 월변제금 역산'}),h('button',{class:'btn btn--sm btn--line',type:'button','data-act':'auto',text:'직접 조정 지우기(가용소득 사용)'})),
+      h('p',{class:'sh__hint',text:'월 변제금 직접 조정이 0이면 월 가용소득을 그대로 씁니다.'}));
+  function foldBtn(){asBtn.textContent=fAsset.open?'내역 닫기 ▴':'내역 열기 ▾';asBtn.setAttribute('aria-expanded',fAsset.open?'true':'false')}
+  var chips=h('div',{class:'shq',role:'group','aria-label':'주요 채무발생 원인 빠른 입력'});SH_CAUSE.forEach(function(x){chips.appendChild(h('button',{type:'button',class:'shm__b','data-cause':x,text:'+ '+x}))});
+  var causeF=area('cause','주요 채무발생 원인','생활비, 사업실패, 투자, 보증, 질병, 이혼 등');causeF.insertBefore(chips,els.cause);
+  var fAvoid=fold('avoid','최근 재산 처분·편파변제·무상이체(부인권)',function(v){return v.avoidance?'있음':'없음'},function(v){return !!v.avoidance},
+      area('avoidance','최근 재산처분·편파변제·무상이체 등','부인권/청산가치 반영 가능성을 검토할 사항'));
+  var fCase=fold('case','사건 정보 — 생년월일·부양가족·관할법원·담당자·진행상태',function(v){return v.proc||''},function(v){return !!(v.birth||v.dependents||v.court||v.caseNo||v.manager||v.proc!=='상담')},
+      grid('shg--4',date('birth','생년월일'),num('dependents','부양가족 수'),o.ci?null:text('court','관할법원','예) 부산회생법원'),o.ci?null:text('caseNo','사건번호','접수 후 입력'),text('manager','상담 담당자'),sel('proc','절차 진행상태')),o.ci?ciMirror():null);
+  fCase.el.classList.add('shc--full');
+  secEl.fin=h('div',{class:'shs'},
+    card('소득·채무·재산','shc--full',grid('shg--3',money('monthlyIncome','월 평균 실수령 소득'),livF,money('unsecured','무담보 원금'),num('creditors','채권자 수'),asF,moF),fAsset.el,fAdj.el,
+      h('div',{class:'sh__sum'},h('span',{text:'월 가용소득'}),outEl('disp1')),h('p',{class:'sh__hint',text:'가용소득 = 월 소득 − 기준 생계비 − 추가 생계비 − 기타 공제/조정 · 계산 결과는 「변제계획」에서 봅니다.'})),
+    card('채무 원인·특이사항','shc--full',causeF,fAvoid.el),fCase.el);
   /* ③ 변제계획 */
   var kp=h('div',{class:'shk'});[['disp','월 가용소득'],['mp','적용 월 변제금'],['total','총 변제예정액'],['rate','원금 변제율']].forEach(function(x){kp.appendChild(h('div',null,h('span',{text:x[1]}),outEl(x[0],'strong')))});
   var kv=h('dl',{class:'shkv'});[['liq','총 청산가치'],['total2','총 변제예정액'],['gap','청산가치 대비 여유/부족'],['rate2','현재 월 변제금 기준 변제율'],['need','청산가치 충족 최소 월변제금']].forEach(function(x){kv.appendChild(h('div',null,h('dt',{text:x[1]}),outEl(x[0],'dd')))});
   out.liqBox=h('div',{class:'shr','aria-live':'polite'});
   secEl.calc=h('div',{class:'shs'},
-    card('변제계획 자동 계산','shc--full',grid('shg--4',num('months','변제기간(개월)'),money('manualPay','월 변제금 직접 조정'),money('lumpSum','일시변제·압류적립금 등 추가 투입액'),sel('rateBase','변제율 계산 기준')),
-      h('p',{class:'sh__hint',text:'월 변제금 직접 조정이 0이면 월 가용소득을 그대로 씁니다. 숫자를 고치면 바로 다시 계산합니다.'}),
-      h('div',{class:'sh__act'},h('button',{class:'btn btn--sm',type:'button','data-act':'need',text:'청산가치 충족 월변제금 역산'}),h('button',{class:'btn btn--sm btn--line',type:'button','data-act':'auto',text:'직접 조정 지우기(가용소득 사용)'})),kp),
+    card('변제계획 자동 계산','shc--full',h('p',{class:'sh__hint',style:'margin:0 0 12px',text:'변제기간·월 변제금 직접 조정 등 숫자는 「채무·재산·소득」에서 고칩니다. 고치면 바로 다시 계산합니다.'}),kp),
     card('청산가치 보장 검토','',out.liqBox),card('변제계획 핵심 수치','',kv),
     h('p',{class:'sh__warn shc--full',text:'실무상 주의: 이 계산은 1차 상담·사건검토용입니다. 실제 제출 변제계획은 개인회생채권자목록, 우선권채권, 별제권, 청산가치 산정, 면제재산, 압류적립금, 추가생계비 인정 여부, 부인권 대상 등 사건별 요소를 별도로 검토해야 합니다.'}));
   /* ④ 전문 검토 */
@@ -9726,7 +9822,9 @@ function sheetMount(box,o){
     var lb=out.liqBox;lb.textContent='';
     if(c.gap>=0){lb.appendChild(h('b',{class:'ok',text:'청산가치 충족'}));lb.appendChild(h('p',{text:'총 변제예정액이 청산가치보다 '+wonFull(c.gap)+' 많습니다.'}))}
     else{lb.appendChild(h('b',{class:'bad',text:'청산가치 미충족'}));lb.appendChild(h('p',{text:wonFull(-c.gap)+' 부족합니다. 현재 기간을 유지한다면 월 변제금을 약 '+wonFull(Math.ceil(c.need))+' 이상으로 검토해야 합니다.'}))}
-    out.diag.textContent='';c.msgs.forEach(function(m){out.diag.appendChild(h('li',{text:m}))});return c}
+    out.diag.textContent='';c.msgs.forEach(function(m){out.diag.appendChild(h('li',{text:m}))});
+    folds.forEach(function(f){f.draw(v,c)});if(document.activeElement!==hh)hh.value=SH_LIVING.indexOf(v.living)>=0?String(v.living):'';
+    $$('[data-mo]',moC).forEach(function(b){b.setAttribute('aria-pressed',+b.getAttribute('data-mo')===v.months?'true':'false')});return c}
   function drawWho(){var w=o.who?o.who():{};who.textContent=[w.name?'성명 '+w.name:'',w.phone?'연락처 '+w.phone:''].filter(Boolean).join(' · ');who.hidden=!who.textContent}
   function plan(ms){clearTimeout(timer);timer=setTimeout(save,ms)}
   /* 고친 칸만 보낸다. 실패하면 그 칸들을 다시 「저장 전」으로 돌려 놓는다. */
@@ -9743,13 +9841,19 @@ function sheetMount(box,o){
     if(k in dirty)plan(150)});
   box.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b||!box.contains(b))return;var a=b.getAttribute('data-act');
     if(a==='need'){var c=shCalc(read());put('manualPay',Math.ceil(c.need));touch('manualPay',250)}
-    else if(a==='auto'){put('manualPay',0);touch('manualPay',250)}});
+    else if(a==='auto'){put('manualPay',0);touch('manualPay',250)}
+    else if(a==='asset'){fAsset.user=true;fAsset.set(!fAsset.open);foldBtn()}});
+  hh.addEventListener('change',function(){if(!hh.value||els.living.disabled)return;put('living',+hh.value);touch('living',250)});
+  moC.addEventListener('click',function(e){var b=e.target.closest('[data-mo]');if(!b||els.months.disabled)return;put('months',+b.getAttribute('data-mo'));touch('months',250)});
+  chips.addEventListener('click',function(e){var b=e.target.closest('[data-cause]'),el=els.cause;if(!b||el.disabled||el.readOnly)return;var x=b.getAttribute('data-cause'),cur=el.value.replace(/\s+$/,'');
+    if(cur.split(/[,\n]\s*/).indexOf(x)>=0)return;el.value=(cur?cur+', ':'')+x;if(el.value.length>SH_TEXT.cause)el.value=cur;else touch('cause',900);el.focus()});
   function show(t){if(!secEl[t]||(tabEl[t]&&tabEl[t].hidden))t='basic';sec=t;all.forEach(function(x){x[2].hidden=x[0]!==t});if(o.bar)dTabSel(bar,t);stVis()}
   api={show:show,sec:function(){return sec},
     /* 다른 기록을 열 때: 화면을 그 기록의 값으로 채운다 */
-    load:function(raw){clearTimeout(timer);timer=0;dirty={};var v=shOf(raw);Object.keys(els).forEach(function(k){put(k,v[k])});drawWho();recalc();status('')},
+    load:function(raw){clearTimeout(timer);timer=0;dirty={};var v=shOf(raw);Object.keys(els).forEach(function(k){put(k,v[k])});folds.forEach(function(f){f.user=false;f.set(f.has(v))});foldBtn();drawWho();recalc();status('')},
     /* 다른 직원이 고친 값이 들어왔을 때: 내가 고치는 중인 칸은 건드리지 않는다 */
-    sync:function(raw){var v=shOf(raw),ch=false;Object.keys(els).forEach(function(k){if(k in dirty||document.activeElement===els[k])return;if(get(k)!==v[k]){put(k,v[k]);ch=true}});drawWho();if(ch)recalc()},
+    sync:function(raw){var v=shOf(raw),ch=false;Object.keys(els).forEach(function(k){if(k in dirty||document.activeElement===els[k])return;if(get(k)!==v[k]){put(k,v[k]);ch=true}});drawWho();
+      if(ch){recalc();folds.forEach(function(f){if(!f.user&&!f.open&&f.has(v))f.set(true)});foldBtn()}},
     flush:function(){return save()},dirty:function(){return Object.keys(dirty).length>0},value:read,
     extraShow:function(k,on){if(!tabEl[k])return;tabEl[k].hidden=!on;if(!on&&sec===k)show('basic')}};
   api.load(null);show('basic');return api}
@@ -11234,14 +11338,15 @@ function mmOtherBtn(where){var k=0;mmConvs().forEach(function(x){if(x.unread&&!(
 
 /* ── 자리: 메신저 탭·대화방 칸·키보드에서는 숨고, 아래에 붙는 막대([data-mm-lift])가 있으면 그만큼 올라간다 ── */
 function mmWhy(){if(!ME||intra.hidden||$('#app').hidden)return 'off';if(!$('#tab-chat').hidden)return 'tab';if(CR.pane)return 'pane';return ''}
-function mmPlace(){var root=$('#mm');if(!root)return;var why=mmWhy();if(why&&MM.open)mmClose(true);root.hidden=!!why;if(why){mmPeekClose();return}
+function mmPlace(){var root=$('#mm');if(!root)return;var why=mmWhy();if(why&&MM.open)mmClose(true);root.hidden=!!why;if(why){mmPeekClose();mcClose();return}
+  var cf=$('#mcFab');if(cf){cf.hidden=!$('#tab-cal').hidden;if(cf.hidden)mcClose()}
   root.classList.toggle('mm--kb',!!MM.kb&&!MM.open);root.classList.toggle('mm--open',!!MM.open);
   var lift=0;$$('[data-mm-lift]').forEach(function(el){if(el.hidden||!el.offsetParent)return;var r=el.getBoundingClientRect();if(r.height&&r.bottom>=innerHeight-4)lift=Math.max(lift,r.height)});root.style.setProperty('--mm-lift',lift+'px')}
 function mmPhone(){return matchMedia('(max-width:640px)').matches}
 
 /* ── 미니 창 ── */
 function mmOk(chan){var k=chan.charAt(0),q=chan.slice(1);if(k==='!')return crOk(q);if(k==='@')return !!S.staff[q]&&q!==ME;if(k==='~')return !!roomById(q);var c=chanOf(chan);return !!c&&chanVisible(c)}
-function mmShow(){var w=$('#mmWin');MM.open=true;w.hidden=false;$('#mmList').hidden=MM.view!=='list';$('#mmChat').hidden=MM.view!=='chat';$('#mmFi').innerHTML=SVG_DOWN;$('#mmFab').setAttribute('aria-expanded','true');mmPeekClose();mmPlace();mmBadge()}
+function mmShow(){var w=$('#mmWin');mcClose();MM.open=true;w.hidden=false;$('#mmList').hidden=MM.view!=='list';$('#mmChat').hidden=MM.view!=='chat';$('#mmFi').innerHTML=SVG_DOWN;$('#mmFab').setAttribute('aria-expanded','true');mmPeekClose();mmPlace();mmBadge()}
 function mmHome(){var main=$('.chat__main');if(main&&main.parentNode===$('#mmHost')){menClose();$('#tab-chat .chat').appendChild(main)}}
 function mmOpenList(){if(mmWhy())return;MM.view='list';mmHome();mmShow();mmList();setTimeout(function(){var q=$('#mmQ');if(q&&!mmPhone())q.focus({preventScroll:true})},60)}
 function mmOpen(chan){if(mmWhy())return;if(!mmOk(chan)){wsToast('그 대화를 열 수 없습니다.');return}MM.view='chat';mmShow();$('#mmHost').appendChild($('.chat__main'));
@@ -11336,6 +11441,32 @@ function mmScan(src){if(!ME)return;var now=Date.now(),first=!MM.t0[src];if(first
       if(first||!r||!la||la<=(was||MM.t0.rm)||!t.lastFrom||t.lastFrom===ME)return;ev.push({k:'rm',chan:'~'+rid,label:r.name||'톡방',uid:t.lastFrom,text:'',at:la,men:false})})}
   ev.forEach(mmEv);mmBadge()}
 
+/* ── v211 미니 캘린더: 메신저 아이콘 위 단추 → 작은 달력 + 그날 할 일(처음엔 오늘). 자료는 캘린더 탭과 같다(calMap) ── */
+var MC={open:false,y:0,m:0,sel:''},SVG_CAL='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>';
+function mcBadge(n){var b=$('#mcN'),f=$('#mcFab');if(!b)return;b.textContent=n>99?'99+':String(n||'');b.hidden=!n;f.setAttribute('aria-label','미니 캘린더'+(n?' · 오늘 할 일 '+n+'건':''))}
+function mcSet(date){MC.sel=date;MC.y=+date.slice(0,4);MC.m=+date.slice(5,7)-1}
+function mcMove(k){var d=new Date(MC.y,MC.m+k,1);MC.y=d.getFullYear();MC.m=d.getMonth();mcDraw()}
+function mcLab(it){return it.lab||(it.kind==='case'?'업무 기한':it.kind==='task'?'과제 기한':kindName(it.kind))}
+/* 할 일을 누르면 캘린더 탭의 그날 목록 단추와 같은 곳으로 */
+function mcGo(it){var cid=calCid(it),kid=it.ev?calCaseOf(it.ev):'';mcClose();
+  if(cid)openPend(cid);else if(kid)calCaseGo(kid,calIsC2(it.ev));else if(it.ev&&typeof it.ev.meetingId==='string')mtOpen(it.ev.meetingId);else if(it.task)wsOpen(it.task.id);
+  else if(it.c){if(it.go)s4Go(it.c.id,it.go);else{setTab('cases');openCase(it.c.id)}}else{setTab('cal');calPick(it.ev.date)}}
+function mcDraw(){var g=$('#mcGrid');if(!g||!MC.open)return;var map=calMap(),td=today(),first=new Date(MC.y,MC.m,1),start=new Date(MC.y,MC.m,1-first.getDay()),weeks=Math.ceil((first.getDay()+new Date(MC.y,MC.m+1,0).getDate())/7),
+      ae=document.activeElement,keep=ae&&g.contains(ae)?ae.getAttribute('data-d'):'';
+  $('#mcTitle').textContent=MC.y+'년 '+(MC.m+1)+'월';g.textContent='';DOW.forEach(function(w,i){g.appendChild(h('span',{class:'mc__w'+(i===0?' is-sun':''),'aria-hidden':'true',text:w}))});
+  for(var i=0;i<weeks*7;i++)(function(d){var date=ymd(d),cn=calCount(dayItems(map,date)),tot=cn.f+cn.c+cn.w+cn.e,dots=h('span',{class:'mc__dots','aria-hidden':'true'});
+    CAL_CNT.forEach(function(x){if(cn[x[0]])dots.appendChild(h('i',{class:'mc__dot mc__dot--'+x[0]}))});
+    g.appendChild(h('button',{type:'button',class:'mc__d'+(d.getMonth()!==MC.m?' is-out':'')+(date===td?' is-today':'')+(date===MC.sel?' is-sel':'')+(d.getDay()===0?' is-sun':''),'data-d':date,'data-n':String(tot),'aria-pressed':date===MC.sel?'true':'false',
+      'aria-label':(d.getMonth()+1)+'월 '+d.getDate()+'일'+(tot?', 할 일 '+tot+'건':''),onclick:function(){mcSet(date);mcDraw()}},h('span',{text:String(d.getDate())}),dots))})(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
+  if(keep){var kb=g.querySelector('[data-d="'+keep+'"]');if(kb)kb.focus({preventScroll:true})}
+  var sd=new Date(MC.sel+'T00:00:00'),its=dayItems(map,MC.sel),ul=$('#mcList'),dl=(sd.getMonth()+1)+'월 '+sd.getDate()+'일 ('+DOW[sd.getDay()]+')';
+  $('#mcDay').textContent=MC.sel===td?'오늘 할 일':dl+' 할 일';$('#mcDayN').textContent=its.length?its.length+'건':'';$('#mcDaySub').textContent=MC.sel===td?dl:'';ul.textContent='';
+  if(!its.length)ul.appendChild(h('li',{class:'mc__none',text:!S.ready.events?'불러오는 중…':MC.sel===td?'오늘은 등록된 일정·기한이 없습니다.':'이 날짜에 등록된 일정·기한이 없습니다.'}));
+  its.forEach(function(it){ul.appendChild(h('li',null,h('button',{type:'button',class:'mc__it'+(calIsFx(it)?' is-fx':''),onclick:function(){mcGo(it)}},h('span',{class:'mc__t',text:it.time||'종일'}),
+    h('span',{class:'mc__b'},h('span',{class:'cal__ev k-'+it.kind,text:mcLab(it)}),h('b',{text:it.title})))))})}
+function mcOpen(){if(mmWhy()||!$('#mcWin'))return;if(MM.open)mmClose(true);MC.open=true;mcSet(today());$('#mcWin').hidden=false;$('#mcFab').setAttribute('aria-expanded','true');mcDraw();var b=$('#mcGrid .is-sel');if(b&&!mmPhone())b.focus({preventScroll:true})}
+function mcClose(){if(!MC.open)return;MC.open=false;$('#mcWin').hidden=true;$('#mcFab').setAttribute('aria-expanded','false')}
+function mcToggle(){if(MC.open){mcClose();$('#mcFab').focus({preventScroll:true})}else mcOpen()}
 /* ── 처음 한 번: 아이콘·미니 창·말풍선, 마이페이지 설정, 단축키 ── */
 (function(){var app=$('#app');if(!app)return;
   var fab=h('button',{class:'mm__fab',type:'button',id:'mmFab','aria-expanded':'false','aria-controls':'mmWin','aria-label':'메신저 열기',title:'메신저 (Ctrl+J)',onclick:mmToggle},h('span',{class:'mm__fi',id:'mmFi','aria-hidden':'true'}),h('span',{class:'mm__fn',id:'mmN',hidden:true}));fab.firstChild.innerHTML=SVG_MSN;
@@ -11349,7 +11480,15 @@ function mmScan(src){if(!ME)return;var now=Date.now(),first=!MM.t0[src];if(first
   var win=h('section',{class:'mm__win',id:'mmWin',role:'dialog','aria-label':'메신저 미니 창',hidden:true},grip,list,chat);
   var peek=h('div',{class:'mm__peek',id:'mmPeek',role:'status','aria-live':'polite',hidden:true});
   var scrim=h('div',{class:'mm__scrim','aria-hidden':'true',onclick:function(){mmClose()}});
-  app.appendChild(h('div',{class:'mm',id:'mm',hidden:true},scrim,peek,win,fab));
+  var cfab=h('button',{class:'mm__fab mm__fab--cal',type:'button',id:'mcFab','aria-expanded':'false','aria-controls':'mcWin','aria-label':'미니 캘린더',title:'미니 캘린더 · 오늘 할 일',onclick:mcToggle},h('span',{class:'mm__fi','aria-hidden':'true'}),h('span',{class:'mm__fn',id:'mcN',hidden:true}));cfab.firstChild.innerHTML=SVG_CAL;
+  var cwin=h('section',{class:'mc',id:'mcWin',role:'dialog','aria-label':'미니 캘린더와 할 일',hidden:true},
+    h('div',{class:'mc__cal'},h('div',{class:'mc__hd'},h('button',{class:'mc__nb',type:'button',id:'mcPrev','aria-label':'이전 달',text:'‹',onclick:function(){mcMove(-1)}}),h('b',{id:'mcTitle'}),h('button',{class:'mc__nb',type:'button',id:'mcNext','aria-label':'다음 달',text:'›',onclick:function(){mcMove(1)}}),
+        h('button',{class:'mc__nb mc__tb',type:'button',id:'mcToday',text:'오늘',onclick:function(){mcSet(today());mcDraw()}})),h('div',{class:'mc__grid',id:'mcGrid'})),
+    h('div',{class:'mc__todo'},h('div',{class:'mc__hd'},h('b',{id:'mcDay'}),h('span',{class:'mc__n',id:'mcDayN'}),h('span',{class:'mc__sub',id:'mcDaySub'}),h('button',{class:'mm__ib',type:'button',id:'mcX','aria-label':'미니 캘린더 닫기',title:'닫기 (Esc)',text:'×',onclick:mcToggle})),
+      h('ul',{class:'mc__list',id:'mcList'}),h('button',{class:'mc__all',type:'button',id:'mcBig',text:'캘린더에서 크게 보기 →',onclick:function(){var s=MC.sel;mcClose();setTab('cal');calPick(s)}})));
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&MC.open){e.preventDefault();e.stopPropagation();mcToggle()}},true);
+  document.addEventListener('pointerdown',function(e){if(MC.open&&!(e.target.closest&&e.target.closest('#mcWin,#mcFab')))mcClose()});
+  app.appendChild(h('div',{class:'mm',id:'mm',hidden:true},scrim,peek,win,cwin,cfab,fab));
   /* 말풍선: 마우스를 올리거나 초점이 들어오면 멈춤, 휴대폰은 옆으로 밀어 닫기 */
   peek.addEventListener('mouseenter',function(){clearTimeout(MM.pk.t);peek.classList.add('is-hold')});peek.addEventListener('mouseleave',function(){peek.classList.remove('is-hold');if(MM.pk.list.length)mmPeekTimer(3000)});
   peek.addEventListener('focusin',function(){clearTimeout(MM.pk.t);peek.classList.add('is-hold')});
@@ -13931,7 +14070,7 @@ function renderCal(){
     list.appendChild(h('li',{class:'cal__item'},h('span',{class:'cal__time',text:it.time||'종일'}),
       h('div',{class:'cal__body'},h('div',{class:'cal__hd'},h('span',{class:'cal__ev k-'+it.kind,text:it.lab||(it.kind==='case'?'업무 기한':it.kind==='task'?'과제 기한':kindName(it.kind))}),h('b',{text:it.title})),
         it.memo?rtTextEl('p','cal__memo',it.memo):null,calLinkEl(it),it.uid?h('span',{class:'frow__meta',text:(it.uid===ME?'내가':nameOf(it.uid)+' 님이')+' 등록'}):null),acts))});
-  calCaseSync();var n=dayItems(map,td).length,nc=$('#nCal');nc.textContent=n||'';nc.hidden=!n;nc.classList.toggle('hot',n>0);nc.title=n?'오늘 일정 '+n+'건':'';
+  calCaseSync();var n=dayItems(map,td).length,nc=$('#nCal');nc.textContent=n||'';nc.hidden=!n;nc.classList.toggle('hot',n>0);nc.title=n?'오늘 일정 '+n+'건':'';mcBadge(n);mcDraw();
 }
 function openEv(e){evEdit=e?e.id:null;calCaseOpts(e&&typeof e.caseId==='string'?e.caseId:'');$('#calFormTitle').textContent=e?'일정 수정':'일정 추가';
   $('#evTitle').value=e?e.title:'';$('#evDate').value=e?e.date:calSel;$('#evTime').value=e&&typeof e.time==='string'?e.time:'';$('#evKind').value=e&&kindName(e.kind)!=='기타'?e.kind:e?'etc':'court';$('#evMemo').value=e&&typeof e.memo==='string'?e.memo:'';
