@@ -4306,7 +4306,6 @@ body.is-tab-ws .mm__peek::after{right:auto;left:30px}}
 .s4-pane>.s4-logw{margin-top:16px}
 .s4-fup{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px;padding:10px 12px;border:1px dashed #d9cfc5;background:#fcfaf8}
 .s4-fup.is-over{border-color:var(--apricot-deep);background:var(--apricot-soft)}
-.s4-fup .inp{width:auto;min-height:36px;max-width:100%}
 .s4-fup b{font-size:calc(13.5px + var(--fzs))}
 .s4-fup .sub{margin:0}
 /* v215: 수임계약의 신분증 사진 · 법원 접수의 주소 기준 관할 법원 */
@@ -8373,7 +8372,8 @@ window.addEventListener('keydown',function(e){
     if(e.key==='Tab'){var P=document.getElementById('pvPanel'),fs=[].filter.call(P.querySelectorAll('button,a[href],iframe,video,audio,[tabindex]'),function(x){return !x.hidden&&x.offsetParent!==null});
       if(fs.length){var i=fs.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();fs[fs.length-1].focus()}else if(!e.shiftKey&&i===fs.length-1){e.preventDefault();fs[0].focus()}}}
     return}
-  if(e.key!==' '||e.ctrlKey||e.metaKey||e.altKey||e.repeat||e.isComposing)return;if(pvTyping(e.target))return;
+  if(e.key!==' '||e.ctrlKey||e.metaKey||e.altKey||e.repeat||e.isComposing)return;
+  if(pvTyping(e.target)&&!(e.target.tagName==='SELECT'&&PV.hover&&PV.hover.isConnected&&PV.hover.matches(':hover')))return; /* 글자를 적는 칸에서는 빈칸 입력 그대로. 선택 상자에 커서가 남아 있을 때는 파일 위에 올린 마우스가 먼저 */
   var a=PV.hover&&PV.hover.isConnected&&PV.hover.matches(':hover')?PV.hover:pvIsFile(document.activeElement)?document.activeElement:null;if(!a)return;
   e.preventDefault();e.stopPropagation();pvOpen(a)},true);
 window.addEventListener('resize',function(){if(PV.hover)pvHoverSet(null)});
@@ -12764,8 +12764,6 @@ function s4Close(c,b){var u={bx:{}};u.bx[b.id]={st:'closed',closedAt:Date.now(),
 function s4Reopen(c,b){var u={bx:{}};u.bx[b.id]={st:b.req?'req':'none',closedAt:null,closedBy:null};s4BLog(u,b.id,'open','요청 다시 열기');s4Log('「'+b.name+'」 요청 다시 열기',u);
   return s4Up(c,u).then(function(){syncTrack(s4Merge(caseRow(c.id)||c,u)).catch(function(){})}).catch(fail)}
 async function s4Upload(c,b,fs,kind,nt){if(!fs.length)return;if(!C||!C.assets){note(nt,'bad','파일 올리기는 편집 권한이 있는 계정에서만 할 수 있습니다.');return}
-  if(kind==='out'){var key=c.access&&c.access.key;if(!key){note(nt,'bad','접수번호가 없어 의뢰인에게 보낼 수 없습니다. 「기본 정보」에서 접수번호를 먼저 발급해 주세요.');return}
-    await sendFiles(key,fs,'staff',nt,c.id,b.gen?{}:{bx:b.id,bxT:String(b.name).slice(0,60)});if(!b.gen){var u0=s4BLog({},b.id,'up','의뢰인에게 줄 파일 '+fs.length+'개 보냄');s4Up(c,u0).catch(function(){})}return}
   var fm={},bad=[],now=Date.now();
   for(var i=0;i<fs.length;i++){var f=fs[i],type=TYPES[(f.name.split('.').pop()||'').toLowerCase()];if(!type){bad.push(f.name+' (지원하지 않는 형식)');continue}if(f.size>20*1048576){bad.push(f.name+' (20MB 초과)');continue}
     note(nt,'','올리는 중… '+(i+1)+'/'+fs.length+' · '+f.name);
@@ -12973,23 +12971,22 @@ function s4Draw(c,force){var box=$('#cdStep');if(!box||!c)return;cdReqDraw(c,for
   if(sc)sc.scrollTop=sy;cdReadOnly(!ok);
   var re=D.s4refocus||fk;D.s4refocus=null;if(re){var el=null;try{el=box.querySelector(re)}catch(e){}if(el&&!el.disabled&&el.focus)el.focus({preventScroll:true})}}
 /* ── 파일(어느 단계에서나 같은 한 칸, v214): 바로 올리기 + 최근 파일. 의뢰인에게 서류를 요청하는 것은 「대화·서류」 탭(cdReqDraw) ── */
-function s4FA(f){var a=h('a',{href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',text:f.name||'파일',onclick:function(){setTimeout(function(){s4Seen(f)},0)},onpvopen:function(){setTimeout(function(){s4Seen(f)},0)}});pvAttrs(a,f,f.who,f.at);return a}
+function s4FA(f){var a=h('a',{href:'/centum-intranet-test/_blob/'+f.asset,target:'_blank',rel:'noopener','data-ro-ok':'1',text:f.name||'파일',onclick:function(){setTimeout(function(){s4Seen(f)},0)},onpvopen:function(){setTimeout(function(){s4Seen(f)},0)}});pvAttrs(a,f,f.who,f.at);
+  a.addEventListener('click',function(e){if(typeof pvOpen!=='function'||e.ctrlKey||e.metaKey||e.shiftKey||e.defaultPrevented)return;e.preventDefault();pvOpen(a)});return a}
 function s4FWho(f){return f.who==='client'?'의뢰인':f.who&&S.staff[f.who]?nameOf(f.who)+(f.src==='int'&&f.dir==='in'?' (대신 받음)':''):'사무소'}
 function s4FKind(k){return h('span',{class:'s4-kind s4-kind--'+k,text:S4_KN[k].replace('의뢰인에게 ','').replace(' 파일','')})}
-/* 올리기 칸: 종류(받은 파일 · 줄 파일 · 사무소 안)를 고르고 파일을 고르거나 끌어다 놓는다. withReq면 넣을 요청도 고른다 */
-function s4UpBar(c,F,nt,withReq){var reqs=withReq?s4ReqList(c):[],uk=h('select',{class:'inp','aria-label':'올릴 파일의 종류',id:'s4FUpK'}),ub=null;
-  [['in','의뢰인에게 받은 파일 (직원이 대신 받음)'],['out','의뢰인에게 줄 파일 (의뢰인 화면에 보임)'],['own','사무소 안에서만']].forEach(function(x){uk.appendChild(h('option',{value:x[0],text:x[1]}))});uk.value=F.up||'in';uk.addEventListener('change',function(){F.up=uk.value});
-  if(withReq){ub=h('select',{class:'inp','aria-label':'넣을 요청',id:'s4FUpB'});ub.appendChild(h('option',{value:'',text:'요청 없음'}));reqs.forEach(function(b){ub.appendChild(h('option',{value:b.id,text:'요청 · '+b.name}))});ub.value=reqs.some(function(b){return b.id===F.upb})?F.upb:'';ub.addEventListener('change',function(){F.upb=ub.value})}
-  var fin=h('input',{type:'file',multiple:true,hidden:true,id:'s4FUpIn'}),go=function(a){if(!a.length)return;var cc=caseRow(c.id)||c,b=(ub&&s4ReqList(cc).filter(function(x){return x.id===ub.value})[0])||s4GenBox(cc);s4Upload(cc,b,a,uk.value,$('#'+nt.id)||nt).then(function(){var c2=curCase();if(c2)s4Draw(c2)})};
+/* 올리기 칸(v216): 종류를 고르지 않고 파일만 고르거나 끌어다 놓는다 → 사무소 안 파일. 의뢰인에게 줄 파일은 「대화·서류」 탭에서 보낸다 */
+function s4UpBar(c,nt){var fin=h('input',{type:'file',multiple:true,hidden:true,id:'s4FUpIn'}),go=function(a){if(!a.length)return;var cc=caseRow(c.id)||c;s4Upload(cc,s4GenBox(cc),a,'own',$('#'+nt.id)||nt).then(function(){var c2=curCase();if(c2)s4Draw(c2)})};
   fin.addEventListener('change',function(){var a=[].slice.call(fin.files||[]);fin.value='';go(a)});
-  var up=h('div',{class:'s4-fup',id:'s4FUp'},h('b',{text:'파일 올리기'}),uk,ub,h('button',{class:'btn btn--sm',type:'button','data-fup':'1',text:'파일 고르기',onclick:function(){fin.click()}}),h('span',{class:'sub',text:'또는 이 칸에 끌어다 놓기'}),fin);
+  var up=h('div',{class:'s4-fup',id:'s4FUp'},h('b',{text:'파일 올리기'}),h('button',{class:'btn btn--sm',type:'button','data-fup':'1',text:'파일 고르기',onclick:function(){fin.click()}}),h('span',{class:'sub',text:'또는 이 칸에 끌어다 놓기 · 사무소 안에서만 보입니다'}),h('span',{class:'s4-sp'}),
+    h('button',{class:'s4-link',type:'button','data-ro-ok':'1','data-togive':'1',text:'의뢰인에게 줄 파일은 「대화·서류」에서 보내기 →',onclick:function(){cdTab('talk');var t=$('#cdDrop');if(t&&t.scrollIntoView)t.scrollIntoView({block:'center'})}}),fin);
   ['dragenter','dragover'].forEach(function(ev){up.addEventListener(ev,function(e){if(!s4DragFiles(e))return;e.preventDefault();up.classList.add('is-over')})});up.addEventListener('dragleave',function(e){if(!up.contains(e.relatedTarget))up.classList.remove('is-over')});
   up.addEventListener('drop',function(e){if(!s4DragFiles(e))return;e.preventDefault();up.classList.remove('is-over');go([].slice.call(e.dataTransfer.files||[]))});return up}
-function s4Files(c,ok,pane){var all=s4AllFiles(c).slice().sort(function(a,b){return (b.f.at||0)-(a.f.at||0)}),U=D.s4u=D.s4u||{up:'own'},nt=h('div',{class:'note',id:'s4UNt',role:'status',hidden:true}),ul=h('ul',{class:'s4-rf',id:'s4Recent','aria-label':'최근 파일'});
+function s4Files(c,ok,pane){var all=s4AllFiles(c).slice().sort(function(a,b){return (b.f.at||0)-(a.f.at||0)}),nt=h('div',{class:'note',id:'s4UNt',role:'status',hidden:true}),ul=h('ul',{class:'s4-rf',id:'s4Recent','aria-label':'최근 파일'});
   all.slice(0,5).forEach(function(r){var f=r.f;ul.appendChild(h('li',{'data-kind':r.kind},h('span',{class:'ext',text:((f.name||'').split('.').pop()||'').toUpperCase().slice(0,4)}),s4FA(f),r.isNew?h('span',{class:'pill pill--new',text:'새 파일'}):null,s4FKind(r.kind),h('span',{class:'sub',text:s4FWho(f)+' · '+fmtDate(f.at||0).slice(5)+' '+fmtTime(f.at||0)})))});
   var sec=h('section',{class:'s4-fsec',id:'s4Fsec'},h('div',{class:'s4-hd'},h('h4',{text:'파일'}),h('span',{class:'sub',text:'어느 단계에서나 같은 칸입니다 · 올린 파일은 「전체 파일」에 종류별로 모입니다'}),h('span',{class:'s4-sp'}),
     h('button',{class:'s4-link',type:'button','data-ro-ok':'1',id:'s4ToReq',text:'의뢰인에게 서류 요청은 「대화·서류」에서 →',onclick:function(){cdTab('talk');var t=$('#cdReq');if(t&&t.scrollIntoView)t.scrollIntoView({block:'nearest'})}})));
-  if(ok)sec.appendChild(s4UpBar(c,U,nt,false));
+  if(ok)sec.appendChild(s4UpBar(c,nt));
   sec.appendChild(all.length?ul:h('p',{class:'sub s4-rf__none',text:'아직 주고받은 파일이 없습니다.'}));
   sec.appendChild(h('button',{class:'s4-link s4-bl__all',type:'button','data-ro-ok':'1',text:'전체 파일 보기 ('+all.length+') →',onclick:function(){D.s4tab='files';s4Draw(curCase()||c,true)}}));sec.appendChild(nt);pane.appendChild(sec)}
 function s4Row(c,b,ok,on){var fs=s4BFiles(c,b),st=s4State(c,b,fs),late=s4Late(b),inN=fs.filter(function(f){return f.dir==='in'}).length,nw=fs.filter(s4IsNew).length;
@@ -13161,7 +13158,7 @@ async function s4IdUp(c,fs,nt){if(!fs.length)return;if(!C||!C.assets){wsToast('�
   var n=Object.keys(fm).length;if(n){var u={bx:{gen:{files:fm}}};if(typeof obj(obj((caseRow(c.id)||c).bx).gen).name!=='string')Object.assign(u.bx.gen,{k:'gen',gen:true,name:S4_GEN,pane:'all',o:9999,st:'none',memo:'',at:now,by:ME||null});try{await s4Up(c,s4Log('신분증 사진 '+n+'장 올림',u))}catch(e){fail(e);return}}
   if(nt)nt.hidden=true;wsToast((n?'신분증 사진 '+n+'장을 올렸습니다.':'')+(bad.length?' 올리지 못한 파일: '+bad.join(', '):''))}
 function s4IdCard(c,ok){var idf=s4IdFiles(c),w=h('div',{class:'s4-idc',id:'s4Idc'}),nt=h('div',{class:'note',role:'status',hidden:true,id:'s4IdNt'}),box=h('div');
-  idf.forEach(function(f){var a=s4FA(f);a.textContent='';a.className='s4-idc__t';a.title=f.name||'';a.setAttribute('aria-label','신분증 사진 보기: '+(f.name||'파일'));a.appendChild(s4FIcon(f));a.addEventListener('click',function(e){if(typeof pvOpen!=='function'||e.ctrlKey||e.metaKey||e.shiftKey)return;e.preventDefault();pvOpen(a)}); /* 누르면 바로 미리보기 */
+  idf.forEach(function(f){var a=s4FA(f);a.textContent='';a.className='s4-idc__t';a.title=f.name||'';a.setAttribute('aria-label','신분증 사진 보기: '+(f.name||'파일'));a.appendChild(s4FIcon(f));
     w.appendChild(h('div',{class:'s4-idc__i','data-idf':f.id},a,h('span',{class:'sub s4-idc__n',text:fmtDate(f.at||0).slice(5).replace('-','.')+(f.who&&S.staff[f.who]?' · '+nameOf(f.who):'')}),ok?delBtn('삭제',function(){s4DropFile(caseRow(c.id)||c,s4GenBox(c),f,nt)},'한 번 더 누르면 삭제'):null))});
   if(ok){var fin=h('input',{type:'file',accept:'image/*,application/pdf',multiple:true,hidden:true,id:'s4IdIn'}),go=function(a){if(a.length)s4IdUp(caseRow(c.id)||c,a,$('#s4IdNt')||nt)};
     fin.addEventListener('change',function(){var a=[].slice.call(fin.files||[]);fin.value='';go(a)});
@@ -13250,13 +13247,13 @@ function s4DelBtn(c,r){var b=delBtn('삭제',function(){s4DelFiles(c,[r])},'한 
 /* 머리 「전체 파일 n」 칸: 의뢰인 파일이 늦게 불러와져도 숫자 맞춤 */
 function s4HdFiles(c){var t=$('#s4t-files');if(!t||!c)return;var all=s4AllFiles(c),nw=all.filter(function(r){return r.isNew}).length,b=t.querySelector('b'),m=t.querySelector('.s4-tab__m');if(b)b.textContent='전체 파일 '+all.length;if(m){m.textContent=nw?'새 파일 '+nw:'종류·요청별';m.classList.toggle('is-new',!!nw)}}
 var S4_KN={got:'의뢰인에게 받은 파일',gave:'의뢰인에게 준 파일',own:'사무소 안'};
-function s4FilesTab(c,ok,pane){var all=s4AllFiles(c),F=D.s4f=D.s4f||{kind:'',box:'',nw:false,q:'',up:'in',upb:''},sel=D.s4sel=D.s4sel||{},reqs=s4ReqList(c),nt=h('div',{class:'note',id:'s4FNt',role:'status',hidden:true});
+function s4FilesTab(c,ok,pane){var all=s4AllFiles(c),F=D.s4f=D.s4f||{kind:'',box:'',nw:false,q:''},sel=D.s4sel=D.s4sel||{},reqs=s4ReqList(c),nt=h('div',{class:'note',id:'s4FNt',role:'status',hidden:true});
   Object.keys(sel).forEach(function(k){if(!all.some(function(r){return r.key===k}))delete sel[k]});
   var cnt=function(fn){return all.filter(fn).length};
   pane.appendChild(h('div',{class:'s4-fsum'},h('span',{class:'s4-chip s4-chip--b',text:'전체 '+all.length}),h('span',{class:'s4-chip',text:'의뢰인에게 받음 '+cnt(function(r){return r.kind==='got'})}),h('span',{class:'s4-chip',text:'의뢰인에게 줌 '+cnt(function(r){return r.kind==='gave'})}),
     h('span',{class:'s4-chip',text:'사무소 안 '+cnt(function(r){return r.kind==='own'})}),cnt(function(r){return r.isNew})?h('span',{class:'s4-chip s4-chip--new',text:'새 파일 '+cnt(function(r){return r.isNew})}):null,h('span',{class:'s4-sp'}),
     h('span',{class:'sub',text:'대화·업무방에서 주고받은 파일도 여기에 모입니다'})));
-  if(ok)pane.appendChild(s4UpBar(c,F,nt,true));
+  if(ok)pane.appendChild(s4UpBar(c,nt));
   /* 거르기(다시 그리지 않고 줄만 숨김 — 찾는 칸 커서 유지) */
   var seg=h('div',{class:'s4-seg',role:'group','aria-label':'종류'});[['','전체'],['got','받은 파일'],['gave','준 파일'],['own','사무소 안']].forEach(function(x){seg.appendChild(h('button',{type:'button','data-fst':x[0],'aria-pressed':F.kind===x[0]?'true':'false',text:x[1],onclick:function(){F.kind=x[0];$$('button',seg).forEach(function(y){y.setAttribute('aria-pressed',y.getAttribute('data-fst')===F.kind?'true':'false')});apply()}}))});
   var bsel=h('select',{class:'inp','aria-label':'요청'});bsel.appendChild(h('option',{value:'',text:'모든 요청'}));reqs.forEach(function(b){bsel.appendChild(h('option',{value:b.id,text:b.name}))});bsel.appendChild(h('option',{value:'-',text:'요청 없음'}));bsel.value=F.box==='-'||reqs.some(function(b){return b.id===F.box})?F.box:'';F.box=bsel.value;bsel.addEventListener('change',function(){F.box=bsel.value;apply()});
